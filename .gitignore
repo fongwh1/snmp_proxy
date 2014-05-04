@@ -1,0 +1,6 @@
+*.pyc
+log
+doc
+*.log
+pw.py
+test.py

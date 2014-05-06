@@ -331,7 +331,7 @@ def setDBvtpVlanName(last,value):
 		cursor.execute(lookupQuery)
 		foundRow = cursor.fetchall()
 	except:
-		print "Error in mysql.setDBvtpVlanEditRowStatus(),lookup"
+		print "Error in mysql.setDBvtpVlanName(),lookup"
 	if not foundRow:
 		#vlanID 'last' not exists, insert a new Row into table 'vlans'
 		print "vlan not found! inserting a new vlan"

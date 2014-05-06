@@ -322,7 +322,36 @@ def setDBvtpVlanEditRowStatus(last,value):
 		except:
 			print "Error in mysql.setDBvtpVlanEditRowStatus,updateQuery"
 	
+def setDBvtpVlanName(last,value):
+	c = connectDB()
+	cursor = c.cursor()
+	#check if VLANID, last, is already in the 'vlans' table
+	lookupQuery = "SELECT * FROM vlans WHERE VlanId = \'"+str(last)+"\';"
+	try:
+		cursor.execute(lookupQuery)
+		foundRow = cursor.fetchall()
+	except:
+		print "Error in mysql.setDBvtpVlanEditRowStatus(),lookup"
+	if not foundRow:
+		#vlanID 'last' not exists, insert a new Row into table 'vlans'
+		print "vlan not found! inserting a new vlan"
+		insertQuery = "INSERT into vlans (VlanId, VlanMTU, VlanName) VALUES("+str(last)+","+str(1500)+",'"+str(value)+"');"
+		try:
+			cursor.execute(insertQuery)
+			print "success!"
+		except:
+			print "Error in mysql.setDBvtpVlanName,insertQuery"
+	else:
+		#vlanID already exists,update VlanName
+		print "update VlanName("+str(value)+") of VlanID "+str(last)
+		updateQuery = "UPDATE vlans SET VlanMTU = 1500, VlanName = '"+str(value)+"' WHERE VlanId = '"+str(last)+"';"
+		try:
+			cursor.execute(updateQuery)
+			print "success!"
+		except:
+			print "Error in mysql.setDBvtpVlanName,updateQuery"
+
 
 if __name__ == '__main__':
-	setDBvtpVlanEditRowStatus(9,5)
+	setDBvtpVlanName(10,"test")
 	

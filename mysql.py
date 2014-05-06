@@ -322,6 +322,19 @@ def setDBvtpVlanEditRowStatus(last,value):
 			print "success!"
 		except:
 			print "Error in mysql.setDBvtpVlanEditRowStatus,updateQuery"
+
+def getDBvtpVlanEditRowStatus(last):
+	c = connectDB()
+	cursor = c.cursor()
+	query = "select VlanEditRowStatus from vlans where VlanId = '"+str(last)+"';"
+	try:
+		cursor.execute(query)
+		data = cursor.fetchone()
+		result = long(data[0])
+		return result
+	except:
+		print "Error in getVlanEditRowStatus"
+		return 0L
 	
 def setDBvtpVlanName(last,value):
 	c = connectDB()
@@ -381,6 +394,20 @@ def setDBvtpVlanEditType(last,value):
 		except:
 			print "Error in mysql.setDBvtpVlanEditType,updateQuery"
 
+def getDBvtpVlanEditType(last):
+	c = connectDB()
+	cursor = c.cursor()
+	query = "select VlanEditType from vlans where VlanId = '"+str(last)+"';"
+	try:
+		cursor.execute(query)
+		data = cursor.fetchone()
+		result = long(data[0])
+		return result
+	except:
+		print "Error in getVlanEditType"
+		return 0L
+
+
 def setDBvtpVlanDot10Said(last,value):
 	c = connectDB()
 	cursor = c.cursor()
@@ -409,6 +436,19 @@ def setDBvtpVlanDot10Said(last,value):
 			print "success!"
 		except:
 			print "Error in mysql.setDBvtpVlanDot10Said,updateQuery"
+
+def getDBvtpVlanDot10Said(last):
+	c = connectDB()
+	cursor = c.cursor()
+	query = "select VlanDot10Said0, VlanDot10Said1, VlanDot10Said2, VlanDot10Said3 from vlans where VlanId = '"+str(last)+"';"
+	try:
+		cursor.execute(query)
+		data = cursor.fetchone()
+		Dot10Said = chr(data[0])+chr(data[1])+chr(data[2])+chr(data[3])
+		return Dot10Said
+	except:
+		print "Error in getVlanDot10Said"
+		return 0
 
 def appendOIDTable(oid,value):
 	c = connectDB()
@@ -440,20 +480,21 @@ def appendOIDTable(oid,value):
 			updateQuery = "update OIDs set value = "+str(value)+" where oid = '"+oid+"';"
 		cursor.execute(updateQuery)
 
-def getOIDTable(oid):
+def getOIDTableValue(oid):
 	c = connectDB()
 	cursor = c.cursor()
 	searchQuery = "select value from OIDs where oid = '"+str(oid)+"';"
 	try:
 		cursor.execute(searchQuery)
 		data = cursor.fetchone()
-		value = data[0][0]
-		print value
-		return value
+		value = data[0]
+		try:
+			result = long(value)
+		except:
+			result = value
+		return result
 	except:
 		pass
 
 if __name__ == '__main__':
-#	getOIDTable("1.3.6.1")
-	appendOIDTable("1.3.6.1.5",4L)
-	print getOIDTable("1.3.6.1.5")
+	print getDBvtpVlanEditType(1)

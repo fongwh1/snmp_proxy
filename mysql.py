@@ -410,10 +410,50 @@ def setDBvtpVlanDot10Said(last,value):
 		except:
 			print "Error in mysql.setDBvtpVlanDot10Said,updateQuery"
 
+def appendOIDTable(oid,value):
+	c = connectDB()
+	cursor = c.cursor()
+	#check if oid exists
+	query = "select * from OIDs where oid = '"+str(oid)+"';"
+	cursor.execute(query)
+	existOid = cursor.fetchall()
+	if not existOid:
+		lookupMaxIDQuery = "select max(id) from OIDs;"
+		try:
+			cursor.execute(lookupMaxIDQuery)
+			maxIdCol = cursor.fetchall()
+			maxID = maxIdCol[0][0]
+#			print type(maxID)
+			if isinstance(value,long):
+				insertOIDQuery = "INSERT into OIDs (id,oid,value)VALUES("+str(maxID+1)+",'"+str(oid)+"',"+str(value)+");"
+			elif isinstance(value,int):
+				insertOIDQuery = "INSERT into OIDs (id,oid,value)VALUES("+str(maxID+1)+",'"+str(oid)+"',"+str(value)+");"
+			elif isinstance(value,str):
+				insertOIDQuery = "INSERT into OIDs (id,oid,value)VALUES("+str(maxID+1)+",'"+str(oid)+"','"+str(value)+"');"
+			cursor.execute(insertOIDQuery)
+		except:
+			print "Error in appendOIDTable"
+	else:
+		if isinstance(value,str):
+			updateQuery = "update OIDs set value = '"+value+"' where oid = '"+oid+"';"
+		else:
+			updateQuery = "update OIDs set value = "+str(value)+" where oid = '"+oid+"';"
+		cursor.execute(updateQuery)
 
+def getOIDTable(oid):
+	c = connectDB()
+	cursor = c.cursor()
+	searchQuery = "select value from OIDs where oid = '"+str(oid)+"';"
+	try:
+		cursor.execute(searchQuery)
+		data = cursor.fetchone()
+		value = data[0][0]
+		print value
+		return value
+	except:
+		pass
 
 if __name__ == '__main__':
-	setDBvtpVlanEditType(9,3)
-	setDBvtpVlanName(9,"test")
-	setDBvtpVlanEditRowStatus(9,5)
-	setDBvtpVlanDot10Said(9,"\x00\x01\x88\x16")
+#	getOIDTable("1.3.6.1")
+	appendOIDTable("1.3.6.1.5",4L)
+	print getOIDTable("1.3.6.1.5")

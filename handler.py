@@ -212,8 +212,6 @@ def bulkVlanNameTable(argv):
 	response.extend(vtpVlanNameAppendix)
 	return response[0:32]
 
-def bulkIfDescr():
-	pass
 # original cisco port info
 vlanTrunkPortDynamicStatus=[{'oid': '1.3.6.1.4.1.9.9.46.1.6.1.1.14.10101', 'value': 2L},
               {'oid': '1.3.6.1.4.1.9.9.46.1.6.1.1.14.10102', 'value': 2L},

@@ -496,5 +496,34 @@ def getOIDTableValue(oid):
 	except:
 		pass
 
+def getDBVmVlan(portIndex):
+	c = connectDB()
+	cursor = c.cursor()
+	query = "select vlanID from ports where portIndex = "+str(portIndex)+";"
+	try:
+		cursor.execute(query)
+		data = cursor.fetchone()
+		value = data[0]
+		result = long(value)
+		return result
+	except:
+		print "Error in getVmVlan"
+		return 0
+
+def getDBAdminStatus(portIndex):
+	c = connectDB()
+	cursor = c.cursor()
+	query = "select AdminStatus from ports where portIndex = "+str(portIndex)+";"
+	try:
+		cursor.execute(query)
+		data = cursor.fetchone()
+		value = data[0]
+		result = long(value)
+		return result
+	except:
+		print "Error in getAdminStatus"
+		return 0
+
+
 if __name__ == '__main__':
-	print getDBvtpVlanEditType(1)
+	print getDBAdminStatus(10101)

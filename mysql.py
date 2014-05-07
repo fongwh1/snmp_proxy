@@ -322,6 +322,7 @@ def setDBvtpVlanEditRowStatus(last,value):
 			print "success!"
 		except:
 			print "Error in mysql.setDBvtpVlanEditRowStatus,updateQuery"
+	c.close()
 
 def getDBvtpVlanEditRowStatus(last):
 	c = connectDB()
@@ -331,9 +332,11 @@ def getDBvtpVlanEditRowStatus(last):
 		cursor.execute(query)
 		data = cursor.fetchone()
 		result = long(data[0])
+		c.close()
 		return result
 	except:
 		print "Error in getVlanEditRowStatus"
+		c.close()
 		return 0L
 	
 def setDBvtpVlanName(last,value):
@@ -364,6 +367,7 @@ def setDBvtpVlanName(last,value):
 			print "success!"
 		except:
 			print "Error in mysql.setDBvtpVlanName,updateQuery"
+	c.close()
 
 def setDBvtpVlanEditType(last,value):
 	c = connectDB()
@@ -393,6 +397,7 @@ def setDBvtpVlanEditType(last,value):
 			print "success!"
 		except:
 			print "Error in mysql.setDBvtpVlanEditType,updateQuery"
+	c.close()
 
 def getDBvtpVlanEditType(last):
 	c = connectDB()
@@ -402,9 +407,11 @@ def getDBvtpVlanEditType(last):
 		cursor.execute(query)
 		data = cursor.fetchone()
 		result = long(data[0])
+		c.close()
 		return result
 	except:
 		print "Error in getVlanEditType"
+		c.close()
 		return 0L
 
 
@@ -436,6 +443,7 @@ def setDBvtpVlanDot10Said(last,value):
 			print "success!"
 		except:
 			print "Error in mysql.setDBvtpVlanDot10Said,updateQuery"
+	c.close()
 
 def getDBvtpVlanDot10Said(last):
 	c = connectDB()
@@ -445,9 +453,11 @@ def getDBvtpVlanDot10Said(last):
 		cursor.execute(query)
 		data = cursor.fetchone()
 		Dot10Said = chr(data[0])+chr(data[1])+chr(data[2])+chr(data[3])
+		c.close()
 		return Dot10Said
 	except:
 		print "Error in getVlanDot10Said"
+		c.close()
 		return 0
 
 def appendOIDTable(oid,value):
@@ -479,6 +489,7 @@ def appendOIDTable(oid,value):
 		else:
 			updateQuery = "update OIDs set value = "+str(value)+" where oid = '"+oid+"';"
 		cursor.execute(updateQuery)
+	c.close()
 
 def getOIDTableValue(oid):
 	c = connectDB()
@@ -492,8 +503,10 @@ def getOIDTableValue(oid):
 			result = long(value)
 		except:
 			result = value
+		c.close()
 		return result
 	except:
+		c.close()
 		pass
 
 def getDBVmVlan(portIndex):
@@ -505,9 +518,11 @@ def getDBVmVlan(portIndex):
 		data = cursor.fetchone()
 		value = data[0]
 		result = long(value)
+		c.close()
 		return result
 	except:
 		print "Error in getVmVlan"
+		c.close()
 		return 0
 
 def getDBAdminStatus(portIndex):
@@ -519,11 +534,43 @@ def getDBAdminStatus(portIndex):
 		data = cursor.fetchone()
 		value = data[0]
 		result = long(value)
+		c.close()
 		return result
 	except:
 		print "Error in getAdminStatus"
+		c.close()
 		return 0
+
+def setDBAdminStatus(portIndex, value):
+	c = connectDB()
+	cursor = c.cursor()
+	query = "UPDATE ports SET AdminStatus = "+str(value)+" where portIndex = '"+str(portIndex)+"';"
+	try:
+		cursor.execute(query)
+	except:
+		print "Error in setDBAdminStatus"
+	c.close()
+
+def setDBAdminSpeed(portIndex, value):
+	c = connectDB()
+	cursor = c.cursor()
+	query = "UPDATE ports SET AdminSpeed = "+str(value)+" where portIndex = '"+str(portIndex)+"';"
+	try:
+		cursor.execute(query)
+	except:
+		print "Error in setDBAdminSpeed"
+	c.close()
+
+def setDBDuplex(portIndex, value):
+	c = connectDB()
+	cursor = c.cursor()
+	query = "UPDATE ports SET Duplex = "+str(value)+" where portIndex = '"+str(portIndex)+"';"
+	try:
+		cursor.execute(query)
+	except:
+		print "Error in setDuplex"
+	c.close()
 
 
 if __name__ == '__main__':
-	print getDBAdminStatus(10101)
+	setDBAdminStatus(10101,3)

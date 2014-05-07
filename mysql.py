@@ -539,6 +539,17 @@ def getDBVmVlan(portIndex):
 		c.close()
 		return 0
 
+def setDBVmVlan(portIndex,vlanId):
+	c = connectDB()
+	cursor = c.cursor()
+	query = "update ports set vlanID = "+str(vlanId)+" where portIndex = '"+str(portIndex)+"';"
+	try:
+		cursor.execute(query)
+		c.close()
+	except:
+		print "Error in setVmVlan"
+		c.close()
+
 def getDBAdminStatus(portIndex):
 	c = connectDB()
 	cursor = c.cursor()
@@ -587,4 +598,4 @@ def setDBDuplex(portIndex, value):
 
 
 if __name__ == '__main__':
-	print getDBvtpVlanName(3)
+	print setDBVmVlan(10101,2)

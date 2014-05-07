@@ -97,44 +97,49 @@ portTable = {
 "10202":{"portNumL":10202,"portNumS":102,"pPortName":"TenGigabitEthernet1/0/2","MAC":"00:16:3e:01:00:72","VLANID":1,"AdminStatus":0,"Duplex":2,"AdminSpeed":100000000L}
 }
 def getvtpVlanName(lastFirst):
-	if lastFirst in vtpVlanNameTable.keys():
-		return vtpVlanNameTable[lastFirst]['VlanName']
-	else:
-		print lastFirst
-		return 0
+	result = mysql.getDBvtpVlanName(lastFirst)
+	return result
+#	if lastFirst in vtpVlanNameTable.keys():
+#		return vtpVlanNameTable[lastFirst]['VlanName']
+#	else:
+#		print lastFirst
+#		return 0
 
 def getvtpVlanEditRowStatus(lastFirst):
 	try:
-		result = vtpVlanNameTable[lastFirst]['VlanEditRowStatus']
+		result = mysql.getDBvtpVlanEditRowStatus(lastFirst)
 	except:
 		result = 4 #set default to status "createAndGo"
 	return result
 
 def getvtpVlanEditType(lastFirst):
 	try:
-		result = vtpVlanNameTable[lastFirst]['VlanEditType']
+		result = mysql.getDBvtpVlanEditType(lastFirst)
 	except:
 		result = 0
 	return result
 
 def getvtpVlanEditName(lastFirst):
 	try:
-		result = vtpVlanNameTable[lastFirst]['VlanName']
+		result = mysql.getDBvtpVlanName(lastFirst)
 	except:
 		result = '\x81\x00'
 	return result
 
 def getpVlanEditDot10Said(lastFirst):
 	try:
-		result = vtpVlanNameTable[lastFirst]['VlanDot10Said']
+		result = mysql.getDBvtpVlanDot10Said(lastFirst)
 	except:
 		result = '\x81'
 	return result
 
 def getPortTableAdminStatus(lastFirst):
-	return portTable[lastFirst]['AdminStatus']
+	result = mysql.getDBAdminStatus(lastFirst)
+	return result
+
 def getVmVlan(lastFirst):
-	return portTable[lastFirst]['VLANID']
+	result = mysql.getDBVmVlan(lastFirst)
+	return result
 
 cswitch_attr = {
 	"1.3.6.1.2.1.1.1.0": 'Cisco IOS Software, C2960S Software (C2960S-UNIVERSALK9-M), Version 12.2(55)SE3, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2011 by Cisco Systems, Inc.\r\nCompiled Thu 05-May-11 16:56 by prod_rel_team',
@@ -186,7 +191,7 @@ def bulkVlanNameTable(argv):
 	mtu = []
 	dot10said = []
 	response = []
-	a = vtpVlanNameTable.keys()
+	a = mysql.getVlanNameList()  #vtpVlanNameTable.keys()
 	b = []
 	pprint(vtpVlanNameTable)
 	for i in a:
@@ -197,12 +202,14 @@ def bulkVlanNameTable(argv):
 		nameOID = ".".join(["1.3.6.1.4.1.9.9.46.1.3.1.1.4.1",key])
 		mtuOID = ".".join(["1.3.6.1.4.1.9.9.46.1.3.1.1.5.1",key])
 		d10saidOID = ".".join(["1.3.6.1.4.1.9.9.46.1.3.1.1.6.1",key])
-		print nameOID
-		print mtuOID
-		print d10saidOID
-		name.append({'oid':nameOID,'value':vtpVlanNameTable[key]['VlanName']})
-		mtu.append({'oid':mtuOID,'value':vtpVlanNameTable[key]['VlanMTU']})
-		dot10said.append({'oid':d10saidOID,'value':vtpVlanNameTable[key]['VlanDot10Said']})
+#
+		nameData = mysql.getVlanTableStr("VlanName",intKey)
+		mtuData = mysql.getVlanTableLong("VlanMTU",intKey)
+		d10saidData = mysql.getDBvtpVlanDot10Said(intKey)
+#
+		name.append({'oid':nameOID,'value':nameData})
+		mtu.append({'oid':mtuOID,'value':mtuData})
+		dot10said.append({'oid':d10saidOID,'value':d10saidData})
 	pprint(name)
 	pprint(mtu)
 	pprint(dot10said)
@@ -385,8 +392,9 @@ dot1BassNumPortsP2 = [{'oid': '1.3.6.1.2.1.17.1.4.1.2.48', 'value': 10148L},
               {'oid': '1.3.6.1.2.1.17.4.3.1.1.0.22.24.118.93.10',
                'value': '\x00\x16\x18v]\n'}]
 
+# if MAC of port 1 disappeared in switchmac, checkout this table
 dot1dTpFdbTable1 = [
-{'oid': '1.3.6.1.2.1.17.4.3.1.1.0.22.62.1.1.41','value':'\x00\x16\x3e\x01\x01\x29'},
+{'oid': '1.3.6.1.2.1.17.4.3.1.1.0.22.62.1.1.1','value':'\x00\x16\x3e\x01\x01\x01'},
 {'oid': '1.3.6.1.2.1.17.4.3.1.1.0.22.62.1.1.2','value':'\x00\x16\x3e\x01\x01\x02'},
 {'oid': '1.3.6.1.2.1.17.4.3.1.1.0.22.62.1.1.3','value':'\x00\x16\x3e\x01\x01\x03'},
 {'oid': '1.3.6.1.2.1.17.4.3.1.1.0.22.62.1.1.4','value':'\x00\x16\x3e\x01\x01\x04'},
@@ -427,7 +435,7 @@ dot1dTpFdbTable1 = [
 {'oid': '1.3.6.1.2.1.17.4.3.1.1.0.22.62.1.1.38','value':'\x00\x16\x3e\x01\x01\x26'},
 {'oid': '1.3.6.1.2.1.17.4.3.1.1.0.22.62.1.1.39','value':'\x00\x16\x3e\x01\x01\x27'},
 {'oid': '1.3.6.1.2.1.17.4.3.1.1.0.22.62.1.1.40','value':'\x00\x16\x3e\x01\x01\x28'},
-{'oid': '1.3.6.1.2.1.17.4.3.1.2.0.22.62.1.1.41','value':41L},
+{'oid': '1.3.6.1.2.1.17.4.3.1.2.0.22.62.1.1.1','value':1L},
 {'oid': '1.3.6.1.2.1.17.4.3.1.2.0.22.62.1.1.2','value':2L},
 {'oid': '1.3.6.1.2.1.17.4.3.1.2.0.22.62.1.1.3','value':3L},
 {'oid': '1.3.6.1.2.1.17.4.3.1.2.0.22.62.1.1.4','value':4L},
@@ -468,7 +476,7 @@ dot1dTpFdbTable1 = [
 {'oid': '1.3.6.1.2.1.17.4.3.1.2.0.22.62.1.1.38','value':38L},
 {'oid': '1.3.6.1.2.1.17.4.3.1.2.0.22.62.1.1.39','value':39L},
 {'oid': '1.3.6.1.2.1.17.4.3.1.2.0.22.62.1.1.40','value':40L},
-{'oid': '1.3.6.1.2.1.17.4.3.1.3.0.22.62.1.1.41','value':3L},
+{'oid': '1.3.6.1.2.1.17.4.3.1.3.0.22.62.1.1.1','value':3L},
 {'oid': '1.3.6.1.2.1.17.4.3.1.3.0.22.62.1.1.2','value':3L},
 {'oid': '1.3.6.1.2.1.17.4.3.1.3.0.22.62.1.1.3','value':3L},
 {'oid': '1.3.6.1.2.1.17.4.3.1.3.0.22.62.1.1.4','value':3L},
@@ -813,7 +821,7 @@ def bulkVmVlan(argv):
 	portL = [10101, 10102, 10103, 10104, 10105, 10106, 10107, 10108, 10109, 10110, 10111, 10112, 10113, 10114, 10115, 10116, 10117, 10118, 10119, 10120, 10121, 10122, 10123, 10124, 10125, 10126, 10127, 10128, 10129, 10130, 10131, 10132]
 	for i in portL:
 		strOid = "1.3.6.1.4.1.9.9.68.1.2.2.1.2" + "." + str(i)
-		value = portTable[str(i)]["VLANID"]
+		value = mysql.getPortTableLong("vlanID",i)
 		oid_value = {"oid":strOid,"value":value}
 		result.append(oid_value)
 	return  result
@@ -824,7 +832,7 @@ def bulkVmVlan10132(argv):
 	portL = [10132, 10133, 10134, 10135, 10136, 10137, 10138, 10139, 10140, 10141, 10142, 10143, 10144, 10145, 10146, 10147, 10148, 10149,10150,10201,10202]
 	for i in portL:
 		strOid = "1.3.6.1.4.1.9.9.68.1.2.2.1.2" + "." + str(i)
-		value = portTable[str(i)]["VLANID"]
+		value = mysql.getPortTableLong("vlanID",i)
 		oid_value = {"oid":strOid,"value":value}
 		result.append(oid_value)
 	suf = [{'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.10101', 'value': 2L},
@@ -887,15 +895,16 @@ def SETvtpVlanEditBufferOwner(prefix,last,value):
 from threading import Thread
 
 def remote_set_vlan(mac,vName,vID,reset = False):
-	sshXen.ssh_connect(mac,vName,vID,reset)
+	print vName,mac,str(vID)
+#	sshXen.ssh_connect(mac,vName,vID,reset)
 
 
 
 def SETvmVlan(prefix,last,value):
 	oid = prefix + "." + last
-	cswitch_attr[oid] = value
-	vName = vtpVlanNameTable[str(value)]['VlanName']
-	MAC = portTable[last]["MAC"]
+#	cswitch_attr[oid] = value
+	vName = mysql.getDBvtpVlanName(value)
+	MAC = mysql.getPortTableStr("MAC",last)
 	vlanID = value
 	if vlanID == 1:
 		reset = True
@@ -908,28 +917,27 @@ def SETvmVlan(prefix,last,value):
 	else:
 		t = Thread(target = remote_set_vlan,args = (MAC,vName,vlanID,reset))
 		t.start()
-#	sshXen.ssh_connect(portTable[last]["MAC"],vName,value)
-	print "value:" + str(value)+","+"vlanName:" + str(vName)+","+"portIndex:"+str(last)+","+"MAC:"+portTable[last]["MAC"]
-	portTable[last]["VLANID"] = value
-	return portTable[last]["VLANID"]
+#	print "value:" + str(value)+","+"vlanName:" + str(vName)+","+"portIndex:"+str(last)+","+"MAC:"+portTable[last]["MAC"]
+	mysql.setDBVmVlan(last,value)
+	return value
 
 def SETifAdminStatus(prefix,last,value):
 	oid = prefix + "." + last
-	cswitch_attr[oid] = value
-	portTable[last]["AdminStatus"] = value
-	return portTable[last]["AdminStatus"]
+#	cswitch_attr[oid] = value
+	mysql.setDBAdminStatus(last,value)
+	return value
 
 def SETportAdminSpeed(prefix,lastTwo,lastFirst,value):
 	oid = ".".join([prefix,lastTwo,lastFirst])
-	cswitch_attr[oid] = value
-	portTable[last]["AdminSpeed"] = value
-	return cswitch_attr[oid]
+#	cswitch_attr[oid] = value
+	mysql.setDBAdminSpeed(lastFirst,value)
+	return value
 
 def SETportDuplex(prefix,lastTwo,lastFirst,value):
 	oid = ".".join([prefix,lastTwo,lastFirst])
-	cswitch_attr[oid] = value
-	portTable[lastFirst]["Duplex"] = value
-	return cswitch_attr[oid]
+#	cswitch_attr[oid] = value
+	mysql.setDBDuplex(lastFirst,value)
+	return value
 
 #''' example:{102:{11:4,4:'36',3:1,1:\x00\x01\x87\x06}} '''
 
@@ -938,48 +946,39 @@ def SETportDuplex(prefix,lastTwo,lastFirst,value):
 def SETvtpVlanEditRowStatus(prefix,lastFirst,value):
 	oid = ".".join([prefix,lastFirst])
 	try:
-		vtpVlanNameTable[lastFirst]['VlanEditRowStatus'] = value
+		mysql.setDBvtpVlanEditRowStatus(lastFirst,value)
 	except:
-		vtpVlanNameTable[lastFirst] = {}
-		vtpVlanNameTable[lastFirst]['VlanEditRowStatus'] = value
-		vtpVlanNameTable[lastFirst]['VlanMTU'] = 1500L
-	cswitch_attr[oid] = value
-	print vtpVlanNameTable
-	return vtpVlanNameTable[lastFirst]['VlanEditRowStatus']
+		pass
+#	cswitch_attr[oid] = value
+	return value 
+
 #3.1
 def SETvtpVlanEditType(prefix,lastFirst,value):
 	oid = ".".join([prefix,lastFirst])
 	try:
-		vtpVlanNameTable[lastFirst]['VlanEditType'] = value
+		mysql.setDBvtpVlanEditType(lastFirst,value)
 	except:
-		vtpVlanNameTable[lastFirst] = {}
-		vtpVlanNameTable[lastFirst]['VlanEditType'] = value
-		vtpVlanNameTable[lastFirst]['VlanMTU'] = 1500L
-	cswitch_attr[oid] = value
-	print vtpVlanNameTable
-	return cswitch_attr[oid]
+		pass
+#	cswitch_attr[oid] = value
+	return value
 #4.1
 def SETvtpVlanEditName(prefix,lastFirst,value):
 	oid = ".".join([prefix,lastFirst])
 	try:
-		vtpVlanNameTable[lastFirst]['VlanName'] = value
+		mysql.setDBvtpVlanName(lastFirst,value)
 	except:
-		vtpVlanNameTable[lastFirst] = {}
-		vtpVlanNameTable[lastFirst]['VlanName'] = value
-		vtpVlanNameTable[lastFirst]['VlanMTU'] = 1500L
-	cswitch_attr[oid] = value
-	return cswitch_attr[oid]
+		pass
+#	cswitch_attr[oid] = value
+	return value
 #6.1
 def SETvtpVlanEditDot10Said(prefix,lastFirst,value):
 	oid = ".".join([prefix,lastFirst])
 	try:
-		vtpVlanNameTable[lastFirst]['VlanDot10Said'] = value
+		mysql.setDBvtpVlanDot10Said(lastFirst,value)
 	except:
-		vtpVlanNameTable[lastFirst] = {}
-		vtpVlanNameTable[lastFirst]['VlanDot10Said'] = value
-		vtpVlanNameTable[lastFirst]['VlanMTU'] = 1500L
-	cswitch_attr[oid] = value
-	return cswitch_attr[oid]
+		pass
+#	cswitch_attr[oid] = value
+	return value
 
 setFunctionLast = {
 "1.3.6.1.4.1.9.9.46.1.4.1.1.1":SETvtpVlanEditOperation,

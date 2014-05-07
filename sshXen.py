@@ -1,11 +1,12 @@
 #!/usr/bin/python
 import sys
 import paramiko
+import pw
 
-un = 'root'
-ps = 'csyang,./'
+un = pw.xen_user
+ps = pw.xen_ps
 path = '/usr/local/xnode/'
-server_ip = '192.168.2.124'
+server_ip = pw.xen_host
 
 def create_cmd(mac,vlanName,vlanID,reset = False):
 	if reset:

@@ -156,6 +156,8 @@ def initialPortTable():
 		p_name = "GigabitEthernet1/0/" + str(i)
 		p_MAC = "00:16:3e:01:01:" + format(i,'02x')
 		cursor.execute(newPortQuery(p_id,p_index,p_num,p_name,p_MAC))
+	cursor.execute(newPortQuery(51,10201,101,"TenGigabitEthernet1/0/1","00:16:3e:01:00:71"))
+	cursor.execute(newPortQuery(52,10202,102,"TenGigabitEthernet1/0/2","00:16:3e:01:00:72"))
 	c.close()
 
 def editPTKeyValue(portIndex, key, value):
@@ -378,7 +380,7 @@ def getDBvtpVlanName(vlanID):
 		data = cursor.fetchone()
 		vlanName = data[0]
 		c.close()
-		return vlanName
+		return str(vlanName)
 	except:
 		c.close()
 		return ""
@@ -596,6 +598,84 @@ def setDBDuplex(portIndex, value):
 		print "Error in setDuplex"
 	c.close()
 
+def getPortTableStr(col,portIndex):
+	c = connectDB()
+	cursor = c.cursor()
+	query = "select "+str(col)+" from ports where portIndex ='"+str(portIndex)+"' limit 1;"
+	try:
+		cursor.execute(query)
+		data = cursor.fetchone()
+		result = data[0]
+		result = str(result)
+		c.close()
+		return result
+	except:
+		c.close()
+		return ""
+
+def getPortTableLong(col,portIndex):
+	c = connectDB()
+	cursor = c.cursor()
+	query = "select "+str(col)+" from ports where portIndex ='"+str(portIndex)+"' limit 1;"
+	try:
+		cursor.execute(query)
+		data = cursor.fetchone()
+		result = data[0]
+		result = long(result)
+		c.close()
+		return result
+	except:
+		c.close()
+		return 0L
+
+def getVlanTableLong(col,vlanId):
+	c = connectDB()
+	cursor = c.cursor()
+	query = "select "+str(col)+" from vlans where VlanId ='"+str(vlanId)+"' limit 1;"
+	try:
+		cursor.execute(query)
+		data = cursor.fetchone()
+		result = data[0]
+		result = long(result)
+		c.close()
+		return result
+	except:
+		c.close()
+		return 0L
+
+def getVlanTableStr(col,vlanId):
+	c = connectDB()
+	cursor = c.cursor()
+	query = "select "+str(col)+" from vlans where VlanId ='"+str(vlanId)+"' limit 1;"
+	try:
+		cursor.execute(query)
+		data = cursor.fetchone()
+		result = data[0]
+		result = str(result)
+		c.close()
+		return result
+	except:
+		c.close()
+		return ""
+
+def getVlanNameList():
+	c = connectDB()
+	cursor = c.cursor()
+	query = "select VlanId from vlans;"
+	try:
+		l = []
+		cursor.execute(query)
+		data = cursor.fetchall()
+		for i in data:
+			l.append(i[0])
+		c.close()
+		return l
+	except:
+		c.close()
+		return []
 
 if __name__ == '__main__':
-	print setDBVmVlan(10101,2)
+	resetPortTable()
+	initialPortTable()
+	resetVlanTable()
+	initialVlanTable()

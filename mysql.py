@@ -369,6 +369,20 @@ def setDBvtpVlanName(last,value):
 			print "Error in mysql.setDBvtpVlanName,updateQuery"
 	c.close()
 
+def getDBvtpVlanName(vlanID):
+	c = connectDB()
+	cursor = c.cursor()
+	query = "select VlanName from vlans where VlanId ='"+str(vlanID)+"';"
+	try:
+		cursor.execute(query)
+		data = cursor.fetchone()
+		vlanName = data[0]
+		c.close()
+		return vlanName
+	except:
+		c.close()
+		return ""
+
 def setDBvtpVlanEditType(last,value):
 	c = connectDB()
 	cursor = c.cursor()
@@ -573,4 +587,4 @@ def setDBDuplex(portIndex, value):
 
 
 if __name__ == '__main__':
-	setDBAdminStatus(10101,3)
+	print getDBvtpVlanName(3)

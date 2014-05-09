@@ -142,8 +142,8 @@ def getVmVlan(lastFirst):
 	return result
 
 cswitch_attr = {
-	"1.3.6.1.2.1.1.1.0": 'Cisco IOS Software, C2960S Software (C2960S-UNIVERSALK9-M), Version 12.2(55)SE3, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2011 by Cisco Systems, Inc.\r\nCompiled Thu 05-May-11 16:56 by prod_rel_team',
-#	"1.3.6.1.2.1.1.1.0":'Cisco IOS Software, Catalyst 4500 L3 Switch Software (cat4500-ENTSERVICESK9-M), Version 12.2(54)SG, RELEASE SOFTWARE (fc3)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2010 by Cisco Systems, Inc.\r\nCompiled Sun 27-Jun-10 00:29 b',
+#	"1.3.6.1.2.1.1.1.0": 'Cisco IOS Software, C2960S Software (C2960S-UNIVERSALK9-M), Version 12.2(55)SE3, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2011 by Cisco Systems, Inc.\r\nCompiled Thu 05-May-11 16:56 by prod_rel_team',
+	"1.3.6.1.2.1.1.1.0":'Cisco IOS Software, Catalyst 4500 L3 Switch Software (cat4500-ENTSERVICESK9-M), Version 12.2(54)SG, RELEASE SOFTWARE (fc3)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2010 by Cisco Systems, Inc.\r\nCompiled Sun 27-Jun-10 00:29 b',
 	"1.3.6.1.4.1.9.9.46.1.4.1.1.3.1":"boss.testbed.ncku.edu.tw",
 	
 #diff packet statics with port, each oid below should append a portNumL
@@ -178,7 +178,7 @@ cswitch_attr = {
 	"1.3.6.1.4.1.9.9.46.1.4.2.1.4.1":getvtpVlanEditName,
 	"1.3.6.1.4.1.9.9.46.1.4.2.1.6.1":getpVlanEditDot10Said,
 
-	"1.3.6.1.4.1.9.9.46.1.6.1.1.4":'\x7f\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xf9\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff',
+	"1.3.6.1.4.1.9.9.46.1.6.1.1.4":'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xf9\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff',
 
 	"1.3.6.1.4.1.9.9.46.1.6.1.1.17":'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff',
 }
@@ -193,7 +193,7 @@ def bulkVlanNameTable(argv):
 	response = []
 	a = mysql.getVlanNameList()  #vtpVlanNameTable.keys()
 	b = []
-	pprint(vtpVlanNameTable)
+#	pprint(vtpVlanNameTable)
 	for i in a:
 		b.append(int(i))
 	b = sorted(b)
@@ -210,9 +210,9 @@ def bulkVlanNameTable(argv):
 		name.append({'oid':nameOID,'value':nameData})
 		mtu.append({'oid':mtuOID,'value':mtuData})
 		dot10said.append({'oid':d10saidOID,'value':d10saidData})
-	pprint(name)
-	pprint(mtu)
-	pprint(dot10said)
+#	pprint(name)
+#	pprint(mtu)
+#	pprint(dot10said)
 	response.extend(name)
 	response.extend(mtu)
 	response.extend(dot10said)
@@ -548,7 +548,7 @@ def P1TFTBulk(argv):
 	lastLast = argv['snmpdata'][0]['oid']
 	if lastLast == '1.3.6.1.2.1.17.4.3':
 		for i in range(32):
-			print i
+#			print i
 			result.append(dot1dTpFdbTable1[i])
 		return result
 	lastIndex = 0
@@ -883,20 +883,20 @@ bulk_resp = {	"1.3.6.1.2.1.2.2.1.2":bulkIFDescr,
 def SETvtpVlanEditOperation(prefix,last,value):
 	oid = prefix+"."+last
 	cswitch_attr[oid] = value
-	print oid
+#	print oid
 	return cswitch_attr[oid]
 
 def SETvtpVlanEditBufferOwner(prefix,last,value):
 	oid = prefix + "." + last
 	cswitch_attr[oid] = value
-	print oid
+#	print oid
 	return cswitch_attr[oid]
 
 from threading import Thread
 
 def remote_set_vlan(mac,vName,vID,reset = False):
-	print vName,mac,str(vID)
-#	sshXen.ssh_connect(mac,vName,vID,reset)
+#	print vName,mac,str(vID)
+	sshXen.ssh_connect(mac,vName,vID,reset)
 
 
 

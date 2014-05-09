@@ -55,12 +55,12 @@ def initialVlanTable():
 	]
 	c = connectDB()
 	cursor = c.cursor()
-	print vtpVlanNameTable
+#	print vtpVlanNameTable
 	for k in vtpVlanNameTable:
 		query = "INSERT INTO vlans(VlanID, VlanName, VlanEditType, VlanMTU, VlanDot10Said0,VlanDot10Said1,VlanDot10Said2,VlanDot10Said3, VlanEditRowStatus ) VALUES(%s, '%s', 2, %s, %s,%s,%s,%s, %s)" % (k['VlanID'],k['VlanName'],k['VlanMTU'],str(ord(k['VlanDot10Said'][0])),str(ord(k['VlanDot10Said'][1])),str(ord(k['VlanDot10Said'][2])),str(ord(k['VlanDot10Said'][3])),k['VlanEditRowStatus'])
 		cursor.execute(query)
-		print ord(k['VlanDot10Said'][0]),ord(k['VlanDot10Said'][1]),ord(k['VlanDot10Said'][2]),ord(k['VlanDot10Said'][3])
-		print chr(ord(k['VlanDot10Said'][0])),chr(ord(k['VlanDot10Said'][1])),chr(ord(k['VlanDot10Said'][2])),chr(ord(k['VlanDot10Said'][3]))
+#		print ord(k['VlanDot10Said'][0]),ord(k['VlanDot10Said'][1]),ord(k['VlanDot10Said'][2]),ord(k['VlanDot10Said'][3])
+#		print chr(ord(k['VlanDot10Said'][0])),chr(ord(k['VlanDot10Said'][1])),chr(ord(k['VlanDot10Said'][2])),chr(ord(k['VlanDot10Said'][3]))
 	c.close()
 
 def resetPortTable():
@@ -184,7 +184,7 @@ def getVtpVlanNameTable():
 		vlanItem['VlanDot10Said'] = chr(i[4])+chr(i[5])+chr(i[6])+chr(i[7])
 		vlanItem['VlanEditRowStatus'] = i[8]
 		VNT[int(i[1])] = vlanItem
-	pprint(VNT)
+#	pprint(VNT)
 	c.close()
 
 
@@ -286,7 +286,7 @@ def bulkOID(oid):
 			foundRow = cursor.fetchall()
 	except:
 		print "Error occured in bulkOID()"
-	pprint(foundRow)
+#	pprint(foundRow)
 	if foundRow:
 		foundID = foundRow[0][0]
 		fQuery = "select * from OIDs where id >= "+str(foundID)+" LIMIT 32;"
@@ -434,7 +434,7 @@ def getDBvtpVlanEditType(last):
 def setDBvtpVlanDot10Said(last,value):
 	c = connectDB()
 	cursor = c.cursor()
-	#check if VLANID, last, is already in the 'vlans' table
+	#check if VLANID(last) is already in the 'vlans' table
 	lookupQuery = "SELECT * FROM vlans WHERE VlanId = \'"+str(last)+"\';"
 	try:
 		cursor.execute(lookupQuery)

@@ -10,7 +10,7 @@ import datetime
 
 t = time.time()
 
-now_datetime = datetime.datetime.fromtimestamp(t).strftime('%Y_%m_%d_%H:%M:%S')
+now_datetime = datetime.datetime.fromtimestamp(t).strftime('%Y_%m_%d_%H-%M-%S')
 print now_datetime
 log_path = "./log/"
 log = log_path + now_datetime + ".log"
@@ -107,8 +107,6 @@ def main():
 		while True:
 			print "1"
 			data, addr = UDPSock.recvfrom(1024)
-			print data
-			print addr
 			data = decode(data)
 			pprint(data)
 			pprint(data,fd)

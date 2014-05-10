@@ -37,7 +37,9 @@ def resetVlanTable():
 			VlanDot10Said1 INT,
 			VlanDot10Said2 INT,
 			VlanDot10Said3 INT,
-			VlanEditRowStatus INT
+			VlanEditRowStatus INT,
+			counts	INT,
+			permanent INT
 		)
 
 		"""
@@ -57,7 +59,7 @@ def initialVlanTable():
 	cursor = c.cursor()
 #	print vtpVlanNameTable
 	for k in vtpVlanNameTable:
-		query = "INSERT INTO vlans(VlanID, VlanName, VlanEditType, VlanMTU, VlanDot10Said0,VlanDot10Said1,VlanDot10Said2,VlanDot10Said3, VlanEditRowStatus ) VALUES(%s, '%s', 2, %s, %s,%s,%s,%s, %s)" % (k['VlanID'],k['VlanName'],k['VlanMTU'],str(ord(k['VlanDot10Said'][0])),str(ord(k['VlanDot10Said'][1])),str(ord(k['VlanDot10Said'][2])),str(ord(k['VlanDot10Said'][3])),k['VlanEditRowStatus'])
+		query = "INSERT INTO vlans(VlanID, VlanName, VlanEditType, VlanMTU, VlanDot10Said0,VlanDot10Said1,VlanDot10Said2,VlanDot10Said3, VlanEditRowStatus,counts,permanent ) VALUES(%s, '%s', 2, %s, %s,%s,%s,%s, %s, 0, 1)" % (k['VlanID'],k['VlanName'],k['VlanMTU'],str(ord(k['VlanDot10Said'][0])),str(ord(k['VlanDot10Said'][1])),str(ord(k['VlanDot10Said'][2])),str(ord(k['VlanDot10Said'][3])),k['VlanEditRowStatus'])
 		cursor.execute(query)
 #		print ord(k['VlanDot10Said'][0]),ord(k['VlanDot10Said'][1]),ord(k['VlanDot10Said'][2]),ord(k['VlanDot10Said'][3])
 #		print chr(ord(k['VlanDot10Said'][0])),chr(ord(k['VlanDot10Said'][1])),chr(ord(k['VlanDot10Said'][2])),chr(ord(k['VlanDot10Said'][3]))
@@ -123,7 +125,7 @@ def newPortQuery(	id,
 			portName, 
 			MAC, 
 			vlanID = 1, 
-			AdminStatus = 0, 
+			AdminStatus = 2, 
 			Duplex = 2, 
 			AdminSpeed = 100000000L
 		):
@@ -309,7 +311,7 @@ def setDBvtpVlanEditRowStatus(last,value):
 	if not foundRow:
 		#vlanID 'last' not exists, insert a new Row into table 'vlans'
 		print "vlan not found! inserting a new vlan"
-		insertQuery = "INSERT into vlans (VlanId, VlanMTU, VlanEditRowStatus) VALUES("+str(last)+","+str(1500)+","+str(value)+");"
+		insertQuery = "INSERT into vlans (VlanId, VlanMTU, VlanEditRowStatus,counts,permanent) VALUES("+str(last)+","+str(1500)+","+str(value)+", 0, 0);"
 		try:
 			cursor.execute(insertQuery)
 			print "success!"
@@ -354,7 +356,7 @@ def setDBvtpVlanName(last,value):
 	if not foundRow:
 		#vlanID 'last' not exists, insert a new Row into table 'vlans'
 		print "vlan not found! inserting a new vlan"
-		insertQuery = "INSERT into vlans (VlanId, VlanMTU, VlanName) VALUES("+str(last)+","+str(1500)+",'"+str(value)+"');"
+		insertQuery = "INSERT into vlans (VlanId, VlanMTU, VlanName,counts, permanent) VALUES("+str(last)+","+str(1500)+",'"+str(value)+"',0,0);"
 		try:
 			cursor.execute(insertQuery)
 			print "success!"
@@ -398,7 +400,7 @@ def setDBvtpVlanEditType(last,value):
 	if not foundRow:
 		#vlanID 'last' not exists, insert a new Row into table 'vlans'
 		print "vlan not found! inserting a new vlan"
-		insertQuery = "INSERT into vlans (VlanId, VlanMTU, VlanEditType) VALUES("+str(last)+","+str(1500)+","+str(value)+");"
+		insertQuery = "INSERT into vlans (VlanId, VlanMTU, VlanEditType,counts, permanent) VALUES("+str(last)+","+str(1500)+","+str(value)+",0, 0);"
 		try:
 			cursor.execute(insertQuery)
 			print "success!"
@@ -444,7 +446,7 @@ def setDBvtpVlanDot10Said(last,value):
 	if not foundRow:
 		#vlanID 'last' not exists, insert a new Row into table 'vlans'
 		print "vlan not found! inserting a new vlan"
-		insertQuery = "INSERT into vlans (VlanId, VlanMTU, VlanDot10Said0,VlanDot10Said1,VlanDot10Said2,VlanDot10Said3,) VALUES("+str(last)+","+str(1500)+","+str(ord(value[0]))+","+str(ord(value[1]))+","+str(ord(value[2]))+","+str(ord(value[3]))+");"
+		insertQuery = "INSERT into vlans (VlanId, VlanMTU, VlanDot10Said0,VlanDot10Said1,VlanDot10Said2,VlanDot10Said3,counts, permanent) VALUES("+str(last)+","+str(1500)+","+str(ord(value[0]))+","+str(ord(value[1]))+","+str(ord(value[2]))+","+str(ord(value[3]))+",0, 0);"
 		try:
 			cursor.execute(insertQuery)
 			print "success!"
@@ -545,12 +547,39 @@ def setDBVmVlan(portIndex,vlanId):
 	c = connectDB()
 	cursor = c.cursor()
 	query = "update ports set vlanID = "+str(vlanId)+" where portIndex = '"+str(portIndex)+"';"
+	updateCountQuery = "update vlans set counts = counts + 1 where VlanId ='"+str(vlanId)+"';"
 	try:
 		cursor.execute(query)
+		cursor.execute(updateCountQuery)
 		c.close()
 	except:
 		print "Error in setVmVlan"
 		c.close()
+
+def resetDBVmVlan(portIndex,vlanId):
+	c = connectDB()
+	cursor = c.cursor()
+#	check origin VlanID of the port
+	findVlanIDquery = "select VlanId from ports where portIndex = "+str(portIndex)+";"
+	try:
+		cursor.execute(findVlanIDquery)
+		data = cursor.fetchone()
+		OldVlanID = data[0]
+	except:
+		print "Error in resetDBVmVlan"
+	query = "update ports set VlanId = "+str(vlanId)+" where portIndex = '"+str(portIndex)+"';"
+	updateCountQuery = "update vlans set counts = counts - 1 where VlanId ='"+str(OldVlanID)+"';"
+	try:
+		cursor.execute(query)
+		cursor.execute(updateCountQuery)
+	except:
+		print "Error in resetVmVlan"
+	deleteQuery = "delete from vlans where counts = '0' and permanent = '0' and VlanId = '"+str(OldVlanID)+"';"
+	try:
+		cursor.execute(deleteQuery)
+	except:
+		print "Error in resetVmVlan,delete unused vlan"
+	c.close()
 
 def getDBAdminStatus(portIndex):
 	c = connectDB()
@@ -679,3 +708,4 @@ if __name__ == '__main__':
 	initialPortTable()
 	resetVlanTable()
 	initialVlanTable()
+	initOIDTable()

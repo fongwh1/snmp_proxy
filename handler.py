@@ -908,8 +908,11 @@ def SETvmVlan(prefix,last,value):
 	vlanID = value
 	if vlanID == 1:
 		reset = True
+		mysql.resetDBVmVlan(last,vlanID)
 	else:
 		reset = False
+		mysql.setDBVmVlan(last,vlanID)
+
 	if last == "10201":
 		pass
 	elif last == "10202":
@@ -917,8 +920,6 @@ def SETvmVlan(prefix,last,value):
 	else:
 		t = Thread(target = remote_set_vlan,args = (MAC,vName,vlanID,reset))
 		t.start()
-#	print "value:" + str(value)+","+"vlanName:" + str(vName)+","+"portIndex:"+str(last)+","+"MAC:"+portTable[last]["MAC"]
-	mysql.setDBVmVlan(last,value)
 	return value
 
 def SETifAdminStatus(prefix,last,value):

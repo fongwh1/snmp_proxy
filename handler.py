@@ -1,4 +1,4 @@
-#/usr/bin/python
+﻿#/usr/bin/python
 import sshXen
 import sys
 try:
@@ -13,6 +13,12 @@ def popOID(oid):
 	l.pop()
 	newOid = ".".join(l)
 	return newOid
+
+def getLastNum(oid):
+	oidList = []
+	oidList = oid.split(".")
+	last = oidList.pop()
+	return last
 
 vtpVlanNameTable = {
 "1":{'VlanID':1,'VlanName':'default','VlanMTU':1500L,'VlanDot10Said':'\x00\x01\x86\xa1','VlanEditRowStatus':4,'VlanEditType':1},
@@ -143,8 +149,8 @@ def getVmVlan(lastFirst):
 
 cswitch_attr = {
 #	"1.3.6.1.2.1.1.1.0": 'Cisco IOS Software, C2960S Software (C2960S-UNIVERSALK9-M), Version 12.2(55)SE3, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2011 by Cisco Systems, Inc.\r\nCompiled Thu 05-May-11 16:56 by prod_rel_team',
-	"1.3.6.1.2.1.1.1.0":'Cisco IOS Software, Catalyst 4500 L3 Switch Software (cat4500-ENTSERVICESK9-M), Version 12.2(54)SG, RELEASE SOFTWARE (fc3)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2010 by Cisco Systems, Inc.\r\nCompiled Sun 27-Jun-10 00:29 b',
-	"1.3.6.1.4.1.9.9.46.1.4.1.1.3.1":"boss.testbed.ncku.edu.tw",
+	"1.3.6.1.2.1.1.1.0":'Cisco IOS Software, Catalyst 4500 L3 Switch Software (cat4500e-ENTSERVICESK9-M), Version 12.2(54)SG, RELEASE SOFTWARE (fc3)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2010 by Cisco Systems, Inc.\r\nCompiled Sun 27-Jun-10 09:28',
+	"1.3.6.1.4.1.9.9.46.1.4.1.1.3.1":"boss.ee.testbed.ncku.edu.tw",
 	
 #diff packet statics with port, each oid below should append a portNumL
 	"1.3.6.1.4.1.9.9.46.1.3.1.1.4.1":getvtpVlanName,
@@ -178,9 +184,9 @@ cswitch_attr = {
 	"1.3.6.1.4.1.9.9.46.1.4.2.1.4.1":getvtpVlanEditName,
 	"1.3.6.1.4.1.9.9.46.1.4.2.1.6.1":getpVlanEditDot10Said,
 
-	"1.3.6.1.4.1.9.9.46.1.6.1.1.4":'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xf9\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff',
+	"1.3.6.1.4.1.9.9.46.1.6.1.1.4":'\x7f\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xf9\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff',
 
-	"1.3.6.1.4.1.9.9.46.1.6.1.1.17":'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff',
+#	"1.3.6.1.4.1.9.9.46.1.6.1.1.17":'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff',
 }
 
 
@@ -817,66 +823,224 @@ def getDot1BassNumPorts(argv):
 		return dot1BassNumPortsP1
 
 def bulkVmVlan(argv):
+	suf = [{'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.3', 'value': 2L},
+              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.4', 'value': 2L},
+              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.5', 'value': 2L},
+              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.6', 'value': 2L},
+              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.7', 'value': 2L},
+              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.8', 'value': 2L},
+              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.9', 'value': 2L},
+              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.10', 'value': 2L},
+              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.11', 'value': 2L},
+              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.12', 'value': 2L},
+              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.13', 'value': 2L},
+              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.14', 'value': 2L},
+              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.15', 'value': 2L}]
 	result = []
-	portL = [10101, 10102, 10103, 10104, 10105, 10106, 10107, 10108, 10109, 10110, 10111, 10112, 10113, 10114, 10115, 10116, 10117, 10118, 10119, 10120, 10121, 10122, 10123, 10124, 10125, 10126, 10127, 10128, 10129, 10130, 10131, 10132]
+	oid = argv["snmpdata"][0]["oid"]
+	print oid
+	if ( oid == "1.3.6.1.4.1.9.9.68.1.2.2.1.2"):
+		portL = mysql.getPortIndexList()
+	else:
+		l = oid.split(".")
+		last = l.pop()
+		portL = mysql.getPortIndexList(last)
 	for i in portL:
 		strOid = "1.3.6.1.4.1.9.9.68.1.2.2.1.2" + "." + str(i)
 		value = mysql.getPortTableLong("vlanID",i)
 		oid_value = {"oid":strOid,"value":value}
 		result.append(oid_value)
-	return  result
+	result.extend(suf)
+	return  result[0:32]
 
-
-def bulkVmVlan10132(argv):
-	result = []
-	portL = [10132, 10133, 10134, 10135, 10136, 10137, 10138, 10139, 10140, 10141, 10142, 10143, 10144, 10145, 10146, 10147, 10148, 10149,10150,10201,10202]
-	for i in portL:
-		strOid = "1.3.6.1.4.1.9.9.68.1.2.2.1.2" + "." + str(i)
-		value = mysql.getPortTableLong("vlanID",i)
-		oid_value = {"oid":strOid,"value":value}
-		result.append(oid_value)
-	suf = [{'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.10101', 'value': 2L},
-              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.10102', 'value': 2L},
-              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.10103', 'value': 2L},
-              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.10104', 'value': 2L},
-              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.10105', 'value': 2L},
-              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.10106', 'value': 2L},
-              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.10107', 'value': 2L},
-              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.10108', 'value': 2L},
-              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.10109', 'value': 2L},
-              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.10110', 'value': 2L},
-              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.10111', 'value': 2L},
-              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.10112', 'value': 2L},
-              {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.10113', 'value': 2L}]
-	for a in suf:
-		result.append(a)
-	return  result
 
 def bulkIFDescr(argv):
-	inOID = argv['snmpdata'][0]['oid']
-	fetchData = mysql.bulkOID(inOID)
-	result = []
-	for i in fetchData:
-		newItem = {}
-		newItem['oid'] = str(i[1])
-		try:
-			newItem['value'] = long(i[2])
-		except:
-			newItem['value'] = str(i[2])
-		result.append(newItem)
-	print "bulkIFDescr()"
-	return result
+	OID = argv['snmpdata'][0]['oid']
+	s = [{'oid': '1.3.6.1.2.1.2.2.1.2.345', 'value': 'Null0'},
+              {'oid': '1.3.6.1.2.1.2.2.1.2.346', 'value': 'Vlan1'},
+              {'oid': '1.3.6.1.2.1.2.2.1.2.347', 'value': 'unrouted VLAN 1'},
+              {'oid': '1.3.6.1.2.1.2.2.1.2.348',
+               'value': 'unrouted VLAN 1002'},
+              {'oid': '1.3.6.1.2.1.2.2.1.2.349',
+               'value': 'unrouted VLAN 1004'},
+              {'oid': '1.3.6.1.2.1.2.2.1.2.350',
+               'value': 'unrouted VLAN 1005'},
+              {'oid': '1.3.6.1.2.1.2.2.1.2.351',
+               'value': 'unrouted VLAN 1003'},
+              {'oid': '1.3.6.1.2.1.2.2.1.2.352', 'value': 'Vlan2'},
+              {'oid': '1.3.6.1.2.1.2.2.1.2.367', 'value': 'unrouted VLAN 2'},
+	      {'oid': '1.3.6.1.2.1.2.2.1.3.2', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.3', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.4', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.5', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.6', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.7', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.8', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.9', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.10', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.11', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.12', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.13', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.14', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.15', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.16', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.17', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.18', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.19', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.20', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.21', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.22', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.23', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.24', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.25', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.26', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.27', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.28', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.29', 'value': 6L},
+              {'oid': '1.3.6.1.2.1.2.2.1.3.30', 'value': 6L}]
+	IFlist = mysql.bulkIFDescr()
+	IFlist.extend(s)
+	start = 0
+	for i in range(len(IFlist)):
+		print IFlist[i]["oid"]
+		if(OID == IFlist[i]["oid"]):
+			start = i+1
+			print "found"
+			break
+	return IFlist[start:start+32]
+
+def bulkVlanTrunkPortDynamicStatus(argv):
+#	it is a value of 2 with all those ports except 195 in real, can be consided combine with the MySQL tables 'ports'
+	a = [{"oid":"1.3.6.1.4.1.9.9.46.1.6.1.1.15.3","value":1L},
+	{"oid":"1.3.6.1.4.1.9.9.46.1.6.1.1.15.4","value":1L},
+	{"oid":"1.3.6.1.4.1.9.9.46.1.6.1.1.15.5","value":1L},
+	{"oid":"1.3.6.1.4.1.9.9.46.1.6.1.1.15.6","value":1L},
+	{"oid":"1.3.6.1.4.1.9.9.46.1.6.1.1.15.7","value":1L},
+	{"oid":"1.3.6.1.4.1.9.9.46.1.6.1.1.15.8","value":1L},
+	{"oid":"1.3.6.1.4.1.9.9.46.1.6.1.1.15.9","value":1L},
+	{"oid":"1.3.6.1.4.1.9.9.46.1.6.1.1.15.10","value":1L},
+	{"oid":"1.3.6.1.4.1.9.9.46.1.6.1.1.15.11","value":1L},
+	{"oid":"1.3.6.1.4.1.9.9.46.1.6.1.1.15.12","value":1L},
+	{"oid":"1.3.6.1.4.1.9.9.46.1.6.1.1.15.13","value":1L},
+	]
+	oid = argv["snmpdata"][0]["oid"]
+	head = 3
+	if oid == "1.3.6.1.4.1.9.9.46.1.6.1.1.14":
+		snmpdataList = []
+		for i in range(head,head+32):
+			snmpOid = {}
+			snmpOid["oid"] = ".".join(["1.3.6.1.4.1.9.9.46.1.6.1.1.14",str(i)])
+			snmpOid["value"] = 2L
+			snmpdataList.append(snmpOid)
+	else:
+		head = int(getLastNum(oid))+1
+		snmpdataList = []
+		if head+32 > mysql.maxPort:
+			end = mysql.maxPort+2
+		else:
+			end = head+32
+		for i in range(head,end):
+			snmpOid = {}
+			snmpOid["oid"] = ".".join(["1.3.6.1.4.1.9.9.46.1.6.1.1.14",str(i)])
+			snmpOid["value"] = 2L
+			snmpdataList.append(snmpOid)
+	snmpdataList.extend(a)
+	return snmpdataList[0:32]
+
+def bulkDot1TpFdbTable(argv):
+	a = [
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.2','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.3','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.4','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.5','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.6','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.7','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.8','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.9','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.10','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.11','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.12','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.13','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.14','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.15','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.16','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.17','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.18','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.19','value':'0.0'},
+	]
+	OID = argv['snmpdata'][0]['oid']
+	com = argv['community']
+	comList = com.split("@")
+	sVlan = comList.pop()
+	print sVlan
+	oidList = mysql.bulkD1TPtable(sVlan)
+	oidList.extend(a)
+	start = 0
+	for i in range(len(oidList)):
+		print oidList[i]["oid"]
+		if(OID == oidList[i]["oid"]):
+			start = i+1
+			print "found"
+			break
+	return oidList[start:start+32]
+
+def bulkBassNumPorts(argv):
+	a = [
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.2','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.3','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.4','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.5','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.6','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.7','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.8','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.9','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.10','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.11','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.12','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.13','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.14','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.15','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.16','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.17','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.18','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.19','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.20','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.21','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.22','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.23','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.24','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.25','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.26','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.27','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.28','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.29','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.30','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.31','value':'0.0'},
+	{'oid':'1.3.6.1.2.1.17.1.4.1.3.32','value':'0.0'},
+	]
+	OID = argv['snmpdata'][0]['oid']
+	com = argv['community']
+	comList = com.split("@")
+	sVlan = comList.pop()
+	print sVlan
+	oidList = mysql.bulkBassNum(sVlan)
+	oidList.extend(a)
+	start = 0
+	for i in range(len(oidList)):
+		print oidList[i]["oid"]
+		if(OID == oidList[i]["oid"]):
+			start = i+1
+			print "found"
+			break
+	return oidList[start:start+32]
+
 
 bulk_resp = {	"1.3.6.1.2.1.2.2.1.2":bulkIFDescr,
-#		"1.3.6.1.2.1.2.2.1.2.10127":cisco_ifDescr_2,
 		"1.3.6.1.4.1.9.9.46.1.3.1.1.4":bulkVlanNameTable,
 		"1.3.6.1.4.1.9.9.68.1.2.2.1.2":bulkVmVlan,
-		"1.3.6.1.4.1.9.9.68.1.2.2.1.2.10132":bulkVmVlan10132,
-		"1.3.6.1.4.1.9.9.46.1.6.1.1.14":vlanTrunkPortDynamicStatus,
-		"1.3.6.1.4.1.9.9.46.1.6.1.1.14.10132":vlanTrunkPortDynamicStatus2,
-		"1.3.6.1.2.1.17.1.4.1.2":getDot1BassNumPorts,
-		"1.3.6.1.2.1.17.1.4.1.2.32":dot1BassNumPorts36P1,
-		"1.3.6.1.2.1.17.4.3":getdot1dTpFdbTable,
+		"1.3.6.1.4.1.9.9.46.1.6.1.1.14":bulkVlanTrunkPortDynamicStatus,
+		"1.3.6.1.2.1.17.1.4.1.2":bulkBassNumPorts,
+		"1.3.6.1.2.1.17.4.3":bulkDot1TpFdbTable,
 }
 
 	
@@ -1060,11 +1224,11 @@ def snmpGetValue(argv):
 	if isinstance(a['snmpdata'],list):
 		for oid in a['snmpdata']:
 			try:
-				oid['value']=cswitch_attr[oid['oid']]
+				oid['value']=cswitch_attr[oid['oid']]#directly from the list
 			except:
 				sOid = oid['oid'].split(".")
 				p = sOid.pop()
-				newOid = ".".join(sOid)
+				newOid = ".".join(sOid)#pop the last num 
 				try:
 					oid['value'] = cswitch_attr[newOid](p)
 				except:
@@ -1076,8 +1240,6 @@ def snmpGetValue(argv):
 		if o['oid'][0] == '.':
 			o['oid'] = o['oid'][1:]
 	return a
-
-
 
 def snmpBulkValue(argv):
 	a = argv

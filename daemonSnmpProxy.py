@@ -88,7 +88,14 @@ def encode(data):
 		)
 	)
 	return result
-
+def printBoth(data,fd):
+	L1 = str(data["pdu"]["id"])+"-"+str(data["community"])+"-"+str(data["function"])+":"
+	pprint(L1)
+	pprint(L1,fd)
+	for oid in data["snmpdata"]:
+		pprint(oid)
+		pprint(oid,fd)
+	pprint("\n",fd)
 
 def main():
 	listen_addr = (HOST,PORT)
@@ -108,14 +115,10 @@ def main():
 			print "1"
 			data, addr = UDPSock.recvfrom(1024)
 			data = decode(data)
-			pprint(data)
-			pprint(data,fd)
-			print
+			printBoth(data,fd)
 			print
 			data = handler.reply(data)
-			pprint(data)
-			pprint(data,fd)
-			print
+			printBoth(data,fd)
 			print
 			data = encode(data)
 			UDPSock.sendto(str(data),addr)

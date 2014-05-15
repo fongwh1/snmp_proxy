@@ -21,7 +21,19 @@ def ssh_connect(mac,vlanID,vlanName,reset = False):
 	ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 	ssh.connect(server_ip,username = un,password = ps)
 	stdin, stdout, stderr = ssh.exec_command(create_cmd(mac,vlanName,vlanID,reset))
-	print stdout.read()
+	feedback = stdout.read()
+	print feedback
+	while(feedback[0:19] == "Success::reset vif()"):
+		print "Try Again:"
+		stdin, stdout, stderr = ssh.exec_command(create_cmd(mac,vlanName,vlanID,reset))
+		feedback = stdout.read()
+		print feedback
+	while(feedback[0:17] == "Success::set vif()"):
+		print "Try Again:"
+		stdin, stdout, stderr = ssh.exec_command(create_cmd(mac,vlanName,vlanID,reset))
+		feedback = stdout.read()
+		print feedback
+
 	ssh.close()
 
 

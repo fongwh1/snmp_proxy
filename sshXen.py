@@ -2,11 +2,14 @@
 import sys
 import paramiko
 import pw
+import time
 
 un = pw.xen_user
 ps = pw.xen_ps
 path = '/usr/local/xnode/'
 server_ip = pw.xen_host
+
+maxConnectionTimes = 25
 
 def create_cmd(mac,vlanName,vlanID,reset = False):
 	if reset:
@@ -28,38 +31,28 @@ def ssh_connect(mac,vlanID,vlanName,reset = False):
 			print "connection to dom0 fail, try again:"
 			print "MAC:"+str(mac)
 	execSuccess = False
+	timesCount = 0
 	while(not execSuccess):
 		try:
 			stdin, stdout, stderr = ssh.exec_command(create_cmd(mac,vlanName,vlanID,reset))
 			execSuccess = True
 		except:
 			pass
+		time.sleep(1.5)
+		timesCount+=1
+		if timesCount == maxConnectionTimes:
+			break
+
 	feedback = stdout.read()
 	print feedback
 	eFeedback = feedback.split("vif")
-	print str(eFeedback[1])
 	while(str(eFeedback[1][0:1]) == "()"):
 		print "Try Again:"
 		stdin, stdout, stderr = ssh.exec_command(create_cmd(mac,vlanName,vlanID,reset))
 		feedback = stdout.read()
+		print feedback
 		eFeedback = feedback.split("vif")
-		try:
-			print eFeedback[1]
-		except:
-#			can't find 'vif' in spliting feedback
-			pass
-#	while(feedback[0:17] == "Success::set vif()"):
-#		print "Try Again:"
-#		stdin, stdout, stderr = ssh.exec_command(create_cmd(mac,vlanName,vlanID,reset))
-#		feedback = stdout.read()
-#		print feedback
 	ssh.close()
 
 if __name__=="__main__":
-	ssh_connect("00:16:3e:01:02:28",1,"default",True)
-	ssh_connect("00:16:3e:01:02:1b",1,"default",True)
-	ssh_connect("00:16:3e:01:02:1e",1,"default",True)
-	ssh_connect("00:16:3e:01:01:28",1,"default",True)
-	ssh_connect("00:16:3e:01:01:0b",1,"default",True)
-	ssh_connect("00:16:3e:01:01:0c",1,"default",True)
-
+	pass

@@ -95,7 +95,7 @@ def printBoth(data,fd):
 	for oid in data["snmpdata"]:
 		pprint(oid)
 		pprint(oid,fd)
-	pprint("\n",fd)
+	pprint("...",fd)
 
 def main():
 	listen_addr = (HOST,PORT)
@@ -112,7 +112,6 @@ def main():
 
 	try:
 		while True:
-			print "1"
 			data, addr = UDPSock.recvfrom(1024)
 			data = decode(data)
 			printBoth(data,fd)

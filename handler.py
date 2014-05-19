@@ -20,14 +20,7 @@ def getLastNum(oid):
 	last = oidList.pop()
 	return last
 
-vtpVlanNameTable = {
-"1":{'VlanID':1,'VlanName':'default','VlanMTU':1500L,'VlanDot10Said':'\x00\x01\x86\xa1','VlanEditRowStatus':4,'VlanEditType':1},
-"2":{'VlanID':2,'VlanName':'Control-Hardware','VlanMTU':1500L,'VlanDot10Said':'\x00\x01\x86\xa2','VlanEditRowStatus':4,'VlanEditType':1},
-"1002":{'VlanID':1002,'VlanName':'fddi-default','VlanMTU':1500L,'VlanDot10Said':'\x00\x01\x8a\x8a','VlanEditRowStatus':4,'VlanEditType':2},
-"1003":{'VlanID':1003,'VlanName':'token-ring-default','VlanMTU':1500L,'VlanDot10Said':'\x00\x01\x8a\x8b','VlanEditRowStatus':4,'VlanEditType':3},
-"1004":{'VlanID':1004,'VlanName':'fddinet-default','VlanMTU':1500L,'VlanDot10Said':'\x00\x01\x8a\x8c','VlanEditRowStatus':4,'VlanEditType':4},
-"1005":{'VlanID':1005,'VlanName':'trnet-default','VlanMTU':1500L,'VlanDot10Said':'\x00\x01\x8a\x8d','VlanEditRowStatus':4,'VlanEditType':5},
-}
+
 
 vtpVlanNameAppendix = [{'oid': '1.3.6.1.4.1.9.9.46.1.3.1.1.7.1.1003', 'value': 0L},
               {'oid': '1.3.6.1.4.1.9.9.46.1.3.1.1.8.1.1004', 'value': 0L},
@@ -105,11 +98,6 @@ portTable = {
 def getvtpVlanName(lastFirst):
 	result = mysql.getDBvtpVlanName(lastFirst)
 	return result
-#	if lastFirst in vtpVlanNameTable.keys():
-#		return vtpVlanNameTable[lastFirst]['VlanName']
-#	else:
-#		print lastFirst
-#		return 0
 
 def getvtpVlanEditRowStatus(lastFirst):
 	try:
@@ -147,11 +135,14 @@ def getVmVlan(lastFirst):
 	result = mysql.getDBVmVlan(lastFirst)
 	return result
 
+def getSysDescr():
+	mysql.deleteUnusedVlan()
+	SD = "Cisco IOS Software, Catalyst 4500 L3 Switch Software (cat4500e-ENTSERVICESK9-M), Version 12.2(54)SG, RELEASE SOFTWARE (fc3)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2010 by Cisco Systems, Inc.\r\nCompiled Sun 27-Jun-10 09:28"
+	return SD
+
 cswitch_attr = {
-#	"1.3.6.1.2.1.1.1.0": 'Cisco IOS Software, C2960S Software (C2960S-UNIVERSALK9-M), Version 12.2(55)SE3, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2011 by Cisco Systems, Inc.\r\nCompiled Thu 05-May-11 16:56 by prod_rel_team',
-	"1.3.6.1.2.1.1.1.0":'Cisco IOS Software, Catalyst 4500 L3 Switch Software (cat4500e-ENTSERVICESK9-M), Version 12.2(54)SG, RELEASE SOFTWARE (fc3)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2010 by Cisco Systems, Inc.\r\nCompiled Sun 27-Jun-10 09:28',
+	"1.3.6.1.2.1.1.1.0": getSysDescr,#'Cisco IOS Software, Catalyst 4500 L3 Switch Software (cat4500e-ENTSERVICESK9-M), Version 12.2(54)SG, RELEASE SOFTWARE (fc3)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2010 by Cisco Systems, Inc.\r\nCompiled Sun 27-Jun-10 09:28',
 	"1.3.6.1.4.1.9.9.46.1.4.1.1.3.1":"boss.ee.testbed.ncku.edu.tw",
-	
 #diff packet statics with port, each oid below should append a portNumL
 	"1.3.6.1.4.1.9.9.46.1.3.1.1.4.1":getvtpVlanName,
 	"1.3.6.1.2.1.2.2.1.7":getPortTableAdminStatus,
@@ -186,20 +177,17 @@ cswitch_attr = {
 
 	"1.3.6.1.4.1.9.9.46.1.6.1.1.4":'\x7f\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xf9\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff',
 
-#	"1.3.6.1.4.1.9.9.46.1.6.1.1.17":'\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff',
 }
 
 
 
 def bulkVlanNameTable(argv):
-	print "bulkVlanNameTable"
 	name = []
 	mtu = []
 	dot10said = []
 	response = []
 	a = mysql.getVlanNameList()  #vtpVlanNameTable.keys()
 	b = []
-#	pprint(vtpVlanNameTable)
 	for i in a:
 		b.append(int(i))
 	b = sorted(b)
@@ -216,9 +204,6 @@ def bulkVlanNameTable(argv):
 		name.append({'oid':nameOID,'value':nameData})
 		mtu.append({'oid':mtuOID,'value':mtuData})
 		dot10said.append({'oid':d10saidOID,'value':d10saidData})
-#	pprint(name)
-#	pprint(mtu)
-#	pprint(dot10said)
 	response.extend(name)
 	response.extend(mtu)
 	response.extend(dot10said)
@@ -554,7 +539,6 @@ def P1TFTBulk(argv):
 	lastLast = argv['snmpdata'][0]['oid']
 	if lastLast == '1.3.6.1.2.1.17.4.3':
 		for i in range(32):
-#			print i
 			result.append(dot1dTpFdbTable1[i])
 		return result
 	lastIndex = 0
@@ -838,7 +822,6 @@ def bulkVmVlan(argv):
               {'oid': '1.3.6.1.4.1.9.9.68.1.2.2.1.3.15', 'value': 2L}]
 	result = []
 	oid = argv["snmpdata"][0]["oid"]
-	print oid
 	if ( oid == "1.3.6.1.4.1.9.9.68.1.2.2.1.2"):
 		portL = mysql.getPortIndexList()
 	else:
@@ -902,10 +885,8 @@ def bulkIFDescr(argv):
 	IFlist.extend(s)
 	start = 0
 	for i in range(len(IFlist)):
-		print IFlist[i]["oid"]
 		if(OID == IFlist[i]["oid"]):
 			start = i+1
-			print "found"
 			break
 	return IFlist[start:start+32]
 
@@ -972,15 +953,12 @@ def bulkDot1TpFdbTable(argv):
 	com = argv['community']
 	comList = com.split("@")
 	sVlan = comList.pop()
-	print sVlan
 	oidList = mysql.bulkD1TPtable(sVlan)
 	oidList.extend(a)
 	start = 0
 	for i in range(len(oidList)):
-		print oidList[i]["oid"]
 		if(OID == oidList[i]["oid"]):
 			start = i+1
-			print "found"
 			break
 	return oidList[start:start+32]
 
@@ -1022,15 +1000,12 @@ def bulkBassNumPorts(argv):
 	com = argv['community']
 	comList = com.split("@")
 	sVlan = comList.pop()
-	print sVlan
 	oidList = mysql.bulkBassNum(sVlan)
 	oidList.extend(a)
 	start = 0
 	for i in range(len(oidList)):
-		print oidList[i]["oid"]
 		if(OID == oidList[i]["oid"]):
 			start = i+1
-			print "found"
 			break
 	return oidList[start:start+32]
 
@@ -1047,19 +1022,16 @@ bulk_resp = {	"1.3.6.1.2.1.2.2.1.2":bulkIFDescr,
 def SETvtpVlanEditOperation(prefix,last,value):
 	oid = prefix+"."+last
 	cswitch_attr[oid] = value
-#	print oid
 	return cswitch_attr[oid]
 
 def SETvtpVlanEditBufferOwner(prefix,last,value):
 	oid = prefix + "." + last
 	cswitch_attr[oid] = value
-#	print oid
 	return cswitch_attr[oid]
 
 from threading import Thread
 
 def remote_set_vlan(mac,vName,vID,reset = False):
-#	print vName,mac,str(vID)
 	sshXen.ssh_connect(mac,vName,vID,reset)
 
 
@@ -1224,18 +1196,21 @@ def snmpGetValue(argv):
 	if isinstance(a['snmpdata'],list):
 		for oid in a['snmpdata']:
 			try:
-				oid['value']=cswitch_attr[oid['oid']]#directly from the list
+				oid['value']=cswitch_attr[oid['oid']]()
 			except:
-				sOid = oid['oid'].split(".")
-				p = sOid.pop()
-				newOid = ".".join(sOid)#pop the last num 
 				try:
-					oid['value'] = cswitch_attr[newOid](p)
+					oid['value']=cswitch_attr[oid['oid']]#directly from the list
 				except:
+					sOid = oid['oid'].split(".")
+					p = sOid.pop()
+					newOid = ".".join(sOid)#pop the last num 
 					try:
-						oid['value'] = cswitch_attr[newOid]
+						oid['value'] = cswitch_attr[newOid](p)
 					except:
-						oid['value'] = '' # meaningless 
+						try:
+							oid['value'] = cswitch_attr[newOid]
+						except:
+							oid['value'] = '' # meaningless 
 	for o in a['snmpdata']:
 		if o['oid'][0] == '.':
 			o['oid'] = o['oid'][1:]
@@ -1296,7 +1271,6 @@ def main():
 			pass
 		else:
 			sys.exit("non-known function")
-#	pprint(argv)
 	oid_response_function_map[argv['oid']](argv)
 
 

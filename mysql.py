@@ -60,12 +60,9 @@ def initialVlanTable():
 	]
 	c = connectDB()
 	cursor = c.cursor()
-#	print vtpVlanNameTable
 	for k in vtpVlanNameTable:
 		query = "INSERT INTO vlans(VlanID, VlanName, VlanEditType, VlanMTU, VlanDot10Said0,VlanDot10Said1,VlanDot10Said2,VlanDot10Said3, VlanEditRowStatus,counts,permanent ) VALUES(%s, '%s', 2, %s, %s,%s,%s,%s, %s, 0, 1)" % (k['VlanID'],k['VlanName'],k['VlanMTU'],str(ord(k['VlanDot10Said'][0])),str(ord(k['VlanDot10Said'][1])),str(ord(k['VlanDot10Said'][2])),str(ord(k['VlanDot10Said'][3])),k['VlanEditRowStatus'])
 		cursor.execute(query)
-#		print ord(k['VlanDot10Said'][0]),ord(k['VlanDot10Said'][1]),ord(k['VlanDot10Said'][2]),ord(k['VlanDot10Said'][3])
-#		print chr(ord(k['VlanDot10Said'][0])),chr(ord(k['VlanDot10Said'][1])),chr(ord(k['VlanDot10Said'][2])),chr(ord(k['VlanDot10Said'][3]))
 	c.close()
 
 def resetPortTable():
@@ -119,7 +116,6 @@ def addPorts	(id,
 	qAddPort_2 = str(id) +","+ str(portIndex) +","+ str(portNum) +",\""+ portName +"\",\""+ MAC +"\","+ str(vlanID) +","+ str(AdminStatus) +","+ str(Duplex) +","+ str(AdminSpeed) + ", NOW(), NOW())"
 	qAdd = qAddPort_1 + qAddPort_2
 	cursor.execute(qAdd)
-#	print qAddPort
 	c.close()
 
 def newPortQuery(	id, 
@@ -209,7 +205,6 @@ def getVtpVlanNameTable():
 		vlanItem['VlanDot10Said'] = chr(i[4])+chr(i[5])+chr(i[6])+chr(i[7])
 		vlanItem['VlanEditRowStatus'] = i[8]
 		VNT[int(i[1])] = vlanItem
-#	pprint(VNT)
 	c.close()
 
 
@@ -887,7 +882,6 @@ def initOIDTable():
 		queryInsert = queryInsert+oid_value
 		id+=1
 	queryInsert = queryInsert[0:-1]
-	#print (queryInsert)
 	cursor.execute(queryInsert)
 	c.close()
 
@@ -918,7 +912,6 @@ def bulkOID(oid):
 		cursor.execute(lookupQuery)
 		foundRow = cursor.fetchall()
 		if not foundRow:
-			print "NULL"
 #			newOID = oid + ".1"
 			lookupQuery2 = "select * from OIDs LIMIT 32;"
 			cursor.execute(lookupQuery2)
@@ -926,13 +919,11 @@ def bulkOID(oid):
 			return foundRow
 	except:
 		print "Error occured in bulkOID()"
-#	pprint(foundRow)
 	if foundRow:
 		foundID = foundRow[0][0]
 		fQuery = "select * from OIDs where id > "+str(foundID)+" LIMIT 32;"
 		cursor.execute(fQuery)
 		result = cursor.fetchall()
-	print "mysql.bulkOID"
 	c.close()
 	return result
 
@@ -948,20 +939,16 @@ def setDBvtpVlanEditRowStatus(last,value):
 		print "Error in mysql.setDBvtpVlanEditRowStatus(),lookup"
 	if not foundRow:
 		#vlanID 'last' not exists, insert a new Row into table 'vlans'
-		print "vlan not found! inserting a new vlan"
 		insertQuery = "INSERT into vlans (VlanId, VlanMTU, VlanEditRowStatus,counts,permanent) VALUES("+str(last)+","+str(1500)+","+str(value)+", 0, 0);"
 		try:
 			cursor.execute(insertQuery)
-			print "success!"
 		except:
 			print "Error in mysql.setDBvtpVlanEditRowStatus,insertQuery"
 	else:
 		#vlanID already exists,update VlanEditRowStatus
-		print "update VlanEditRowStatus("+str(value)+") of VlanID "+str(last)
 		updateQuery = "UPDATE vlans SET VlanMTU = 1500, VlanEditRowStatus = "+str(value)+" WHERE VlanId = '"+str(last)+"';"
 		try:
 			cursor.execute(updateQuery)
-			print "success!"
 		except:
 			print "Error in mysql.setDBvtpVlanEditRowStatus,updateQuery"
 	c.close()
@@ -993,20 +980,16 @@ def setDBvtpVlanName(last,value):
 		print "Error in mysql.setDBvtpVlanName(),lookup"
 	if not foundRow:
 		#vlanID 'last' not exists, insert a new Row into table 'vlans'
-		print "vlan not found! inserting a new vlan"
 		insertQuery = "INSERT into vlans (VlanId, VlanMTU, VlanName,counts, permanent) VALUES("+str(last)+","+str(1500)+",'"+str(value)+"',0,0);"
 		try:
 			cursor.execute(insertQuery)
-			print "success!"
 		except:
 			print "Error in mysql.setDBvtpVlanName,insertQuery"
 	else:
 		#vlanID already exists,update VlanName
-		print "update VlanName("+str(value)+") of VlanID "+str(last)
 		updateQuery = "UPDATE vlans SET VlanMTU = 1500, VlanName = '"+str(value)+"' WHERE VlanId = '"+str(last)+"';"
 		try:
 			cursor.execute(updateQuery)
-			print "success!"
 		except:
 			print "Error in mysql.setDBvtpVlanName,updateQuery"
 	c.close()
@@ -1037,20 +1020,16 @@ def setDBvtpVlanEditType(last,value):
 		print "Error in mysql.setDBvtpVlanEditType(),lookup"
 	if not foundRow:
 		#vlanID 'last' not exists, insert a new Row into table 'vlans'
-		print "vlan not found! inserting a new vlan"
 		insertQuery = "INSERT into vlans (VlanId, VlanMTU, VlanEditType,counts, permanent) VALUES("+str(last)+","+str(1500)+","+str(value)+",0, 0);"
 		try:
 			cursor.execute(insertQuery)
-			print "success!"
 		except:
 			print "Error in mysql.setDBvtpVlanEditType,insertQuery"
 	else:
 		#vlanID already exists,update VlanName
-		print "update VlanEditType("+str(value)+") of VlanID "+str(last)
 		updateQuery = "UPDATE vlans SET VlanMTU = 1500, VlanEditType = "+str(value)+" WHERE VlanId = '"+str(last)+"';"
 		try:
 			cursor.execute(updateQuery)
-			print "success!"
 		except:
 			print "Error in mysql.setDBvtpVlanEditType,updateQuery"
 	c.close()
@@ -1083,20 +1062,16 @@ def setDBvtpVlanDot10Said(last,value):
 		print "Error in mysql.setDBvtpVlanDot10Said(),lookup"
 	if not foundRow:
 		#vlanID 'last' not exists, insert a new Row into table 'vlans'
-		print "vlan not found! inserting a new vlan"
 		insertQuery = "INSERT into vlans (VlanId, VlanMTU, VlanDot10Said0,VlanDot10Said1,VlanDot10Said2,VlanDot10Said3,counts, permanent) VALUES("+str(last)+","+str(1500)+","+str(ord(value[0]))+","+str(ord(value[1]))+","+str(ord(value[2]))+","+str(ord(value[3]))+",0, 0);"
 		try:
 			cursor.execute(insertQuery)
-			print "success!"
 		except:
 			print "Error in mysql.setDBvtpVlanDot10Said,insertQuery"
 	else:
 		#vlanID already exists,update VlanName
-		print "update VlanEditType("+str(value)+") of VlanID "+str(last)
 		updateQuery = "UPDATE vlans SET VlanMTU = 1500, VlanDot10Said0 = "+str(ord(value[0]))+", VlanDot10Said1 = "+str(ord(value[1]))+", VlanDot10Said2 = "+str(ord(value[2]))+", VlanDot10Said3 = "+str(ord(value[3]))+" WHERE VlanId = '"+str(last)+"';"
 		try:
 			cursor.execute(updateQuery)
-			print "success!"
 		except:
 			print "Error in mysql.setDBvtpVlanDot10Said,updateQuery"
 	c.close()
@@ -1129,7 +1104,6 @@ def appendOIDTable(oid,value):
 			cursor.execute(lookupMaxIDQuery)
 			maxIdCol = cursor.fetchall()
 			maxID = maxIdCol[0][0]
-#			print type(maxID)
 			if isinstance(value,long):
 				insertOIDQuery = "INSERT into OIDs (id,oid,value)VALUES("+str(maxID+1)+",'"+str(oid)+"',"+str(value)+");"
 			elif isinstance(value,int):
@@ -1212,13 +1186,18 @@ def resetDBVmVlan(portIndex,vlanId):
 		cursor.execute(updateCountQuery)
 	except:
 		print "Error in resetVmVlan"
-	deleteQuery = "delete from vlans where counts = '0' and permanent = '0' and VlanId = '"+str(OldVlanID)+"';"
-	try:
-		pass
-#		cursor.execute(deleteQuery)
-	except:
-		print "Error in resetVmVlan,delete unused vlan"
 	c.close()
+
+def deleteUnusedVlan():
+	c = connectDB()
+	cursor = c.cursor()
+	deleteQuery = "delete from vlans where counts = '0' and permanent = '0';"
+	try:
+		cursor.execute(deleteQuery)
+	except:
+		print "Error in deleteUnusedVlan"
+	c.close()
+
 
 def getDBAdminStatus(portIndex):
 	c = connectDB()
@@ -1423,3 +1402,4 @@ if __name__ == '__main__':
 	initialVlanTable()
 	initOIDTable()
 	bulkD1TPtable("1")
+	deleteUnusedVlan()

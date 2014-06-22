@@ -43,10 +43,11 @@ def resetVlanTable():
 			VlanEditRowStatus INT,
 			counts	INT,
 			permanent INT
-		)
+		);
 
 		"""
 	cursor.execute(query)
+	c.commit()
 	c.close()
 
 def initialVlanTable():
@@ -61,8 +62,9 @@ def initialVlanTable():
 	c = connectDB()
 	cursor = c.cursor()
 	for k in vtpVlanNameTable:
-		query = "INSERT INTO vlans(VlanID, VlanName, VlanEditType, VlanMTU, VlanDot10Said0,VlanDot10Said1,VlanDot10Said2,VlanDot10Said3, VlanEditRowStatus,counts,permanent ) VALUES(%s, '%s', 2, %s, %s,%s,%s,%s, %s, 0, 1)" % (k['VlanID'],k['VlanName'],k['VlanMTU'],str(ord(k['VlanDot10Said'][0])),str(ord(k['VlanDot10Said'][1])),str(ord(k['VlanDot10Said'][2])),str(ord(k['VlanDot10Said'][3])),k['VlanEditRowStatus'])
+		query = "INSERT INTO vlans(VlanID, VlanName, VlanEditType, VlanMTU, VlanDot10Said0,VlanDot10Said1,VlanDot10Said2,VlanDot10Said3, VlanEditRowStatus,counts,permanent ) VALUES(%s, '%s', 2, %s, %s,%s,%s,%s, %s, 0, 1);" % (k['VlanID'],k['VlanName'],k['VlanMTU'],str(ord(k['VlanDot10Said'][0])),str(ord(k['VlanDot10Said'][1])),str(ord(k['VlanDot10Said'][2])),str(ord(k['VlanDot10Said'][3])),k['VlanEditRowStatus'])
 		cursor.execute(query)
+	c.commit()
 	c.close()
 
 def resetPortTable():
@@ -83,6 +85,7 @@ def resetPortTable():
 			modifiedTime DATETIME)
 		"""
 	cursor.execute(qCreate)
+	c.commit()
 	c.close()
 
 
@@ -116,6 +119,7 @@ def addPorts	(id,
 	qAddPort_2 = str(id) +","+ str(portIndex) +","+ str(portNum) +",\""+ portName +"\",\""+ MAC +"\","+ str(vlanID) +","+ str(AdminStatus) +","+ str(Duplex) +","+ str(AdminSpeed) + ", NOW(), NOW())"
 	qAdd = qAddPort_1 + qAddPort_2
 	cursor.execute(qAdd)
+	c.commit()
 	c.close()
 
 def newPortQuery(	id, 
@@ -179,6 +183,7 @@ def initialPortTable():
 		if ( p == 49 ):
 			p = 1
 			slot += 1
+	c.commit()
 	c.close()
 
 def editPTKeyValue(portIndex, key, value):
@@ -188,6 +193,7 @@ def editPTKeyValue(portIndex, key, value):
 	cursor.execute(qUpdate)
 	qUpdate = "UPDATE ports SET modifiedTime = NOW() WHERE portIndex = '"+str(portIndex)+"'"
 	cursor.execute(qUpdate)
+	c.commit()
 	c.close()
 
 def getVtpVlanNameTable():
@@ -205,6 +211,7 @@ def getVtpVlanNameTable():
 		vlanItem['VlanDot10Said'] = chr(i[4])+chr(i[5])+chr(i[6])+chr(i[7])
 		vlanItem['VlanEditRowStatus'] = i[8]
 		VNT[int(i[1])] = vlanItem
+	c.commit()
 	c.close()
 
 
@@ -883,6 +890,7 @@ def initOIDTable():
 		id+=1
 	queryInsert = queryInsert[0:-1]
 	cursor.execute(queryInsert)
+	c.commit()
 	c.close()
 
 def bulkIFDescr():
@@ -924,6 +932,7 @@ def bulkOID(oid):
 		fQuery = "select * from OIDs where id > "+str(foundID)+" LIMIT 32;"
 		cursor.execute(fQuery)
 		result = cursor.fetchall()
+	c.commit()
 	c.close()
 	return result
 
@@ -951,6 +960,7 @@ def setDBvtpVlanEditRowStatus(last,value):
 			cursor.execute(updateQuery)
 		except:
 			print "Error in mysql.setDBvtpVlanEditRowStatus,updateQuery"
+	c.commit()
 	c.close()
 
 def getDBvtpVlanEditRowStatus(last):
@@ -961,10 +971,12 @@ def getDBvtpVlanEditRowStatus(last):
 		cursor.execute(query)
 		data = cursor.fetchone()
 		result = long(data[0])
+		c.commit()
 		c.close()
 		return result
 	except:
 		print "Error in getVlanEditRowStatus"
+		c.commit()
 		c.close()
 		return 0L
 	
@@ -992,6 +1004,7 @@ def setDBvtpVlanName(last,value):
 			cursor.execute(updateQuery)
 		except:
 			print "Error in mysql.setDBvtpVlanName,updateQuery"
+	c.commit()
 	c.close()
 
 def getDBvtpVlanName(vlanID):
@@ -1002,9 +1015,11 @@ def getDBvtpVlanName(vlanID):
 		cursor.execute(query)
 		data = cursor.fetchone()
 		vlanName = data[0]
+		c.commit()
 		c.close()
 		return str(vlanName)
 	except:
+		c.commit()
 		c.close()
 		return ""
 
@@ -1032,6 +1047,7 @@ def setDBvtpVlanEditType(last,value):
 			cursor.execute(updateQuery)
 		except:
 			print "Error in mysql.setDBvtpVlanEditType,updateQuery"
+	c.commit()
 	c.close()
 
 def getDBvtpVlanEditType(last):
@@ -1042,10 +1058,12 @@ def getDBvtpVlanEditType(last):
 		cursor.execute(query)
 		data = cursor.fetchone()
 		result = long(data[0])
+		c.commit()
 		c.close()
 		return result
 	except:
 		print "Error in getVlanEditType"
+		c.commit()
 		c.close()
 		return 0L
 
@@ -1074,6 +1092,7 @@ def setDBvtpVlanDot10Said(last,value):
 			cursor.execute(updateQuery)
 		except:
 			print "Error in mysql.setDBvtpVlanDot10Said,updateQuery"
+	c.commit()
 	c.close()
 
 def getDBvtpVlanDot10Said(last):
@@ -1084,10 +1103,12 @@ def getDBvtpVlanDot10Said(last):
 		cursor.execute(query)
 		data = cursor.fetchone()
 		Dot10Said = chr(data[0])+chr(data[1])+chr(data[2])+chr(data[3])
+		c.commit()
 		c.close()
 		return Dot10Said
 	except:
 		print "Error in getVlanDot10Said"
+		c.commit()
 		c.close()
 		return 0
 
@@ -1133,9 +1154,11 @@ def getOIDTableValue(oid):
 			result = long(value)
 		except:
 			result = value
+		c.commit()
 		c.close()
 		return result
 	except:
+		c.commit()
 		c.close()
 		pass
 
@@ -1148,24 +1171,28 @@ def getDBVmVlan(portIndex):
 		data = cursor.fetchone()
 		value = data[0]
 		result = long(value)
+		c.commit()
 		c.close()
 		return result
 	except:
 		print "Error in getVmVlan"
+		c.commit()
 		c.close()
 		return 0
 
 def setDBVmVlan(portIndex,vlanId):
 	c = connectDB()
 	cursor = c.cursor()
-	query = "update ports set vlanID = "+str(vlanId)+" where portIndex = '"+str(portIndex)+"';"
+	query = "update ports set vlanID = "+str(vlanId)+",modifiedTime = now() where portIndex = '"+str(portIndex)+"';"
 	updateCountQuery = "update vlans set counts = counts + 1 where VlanId ='"+str(vlanId)+"';"
 	try:
 		cursor.execute(query)
 		cursor.execute(updateCountQuery)
+		c.commit()
 		c.close()
 	except:
 		print "Error in setVmVlan"
+		c.commit()
 		c.close()
 
 def resetDBVmVlan(portIndex,vlanId):
@@ -1186,6 +1213,7 @@ def resetDBVmVlan(portIndex,vlanId):
 		cursor.execute(updateCountQuery)
 	except:
 		print "Error in resetVmVlan"
+	c.commit()
 	c.close()
 
 def deleteUnusedVlan():
@@ -1196,6 +1224,7 @@ def deleteUnusedVlan():
 		cursor.execute(deleteQuery)
 	except:
 		print "Error in deleteUnusedVlan"
+	c.commit()
 	c.close()
 
 
@@ -1208,41 +1237,46 @@ def getDBAdminStatus(portIndex):
 		data = cursor.fetchone()
 		value = data[0]
 		result = long(value)
+		c.commit()
 		c.close()
 		return result
 	except:
 		print "Error in getAdminStatus"
+		c.commit()
 		c.close()
 		return 0
 
 def setDBAdminStatus(portIndex, value):
 	c = connectDB()
 	cursor = c.cursor()
-	query = "UPDATE ports SET AdminStatus = "+str(value)+" where portIndex = '"+str(portIndex)+"';"
+	query = "UPDATE ports SET AdminStatus = "+str(value)+",modifiedTime = now() where portIndex = '"+str(portIndex)+"';"
 	try:
 		cursor.execute(query)
 	except:
 		print "Error in setDBAdminStatus"
+	c.commit()
 	c.close()
 
 def setDBAdminSpeed(portIndex, value):
 	c = connectDB()
 	cursor = c.cursor()
-	query = "UPDATE ports SET AdminSpeed = "+str(value)+" where portIndex = '"+str(portIndex)+"';"
+	query = "UPDATE ports SET AdminSpeed = "+str(value)+",modifiedTime = now() where portIndex = '"+str(portIndex)+"';"
 	try:
 		cursor.execute(query)
 	except:
 		print "Error in setDBAdminSpeed"
+	c.commit()
 	c.close()
 
 def setDBDuplex(portIndex, value):
 	c = connectDB()
 	cursor = c.cursor()
-	query = "UPDATE ports SET Duplex = "+str(value)+" where portIndex = '"+str(portIndex)+"';"
+	query = "UPDATE ports SET Duplex = "+str(value)+",modifiedTime = now() where portIndex = '"+str(portIndex)+"';"
 	try:
 		cursor.execute(query)
 	except:
 		print "Error in setDuplex"
+	c.commit()
 	c.close()
 
 def getPortTableStr(col,portIndex):
@@ -1254,9 +1288,11 @@ def getPortTableStr(col,portIndex):
 		data = cursor.fetchone()
 		result = data[0]
 		result = str(result)
+		c.commit()
 		c.close()
 		return result
 	except:
+		c.commit()
 		c.close()
 		return ""
 
@@ -1269,9 +1305,11 @@ def getPortTableLong(col,portIndex):
 		data = cursor.fetchone()
 		result = data[0]
 		result = long(result)
+		c.commit()
 		c.close()
 		return result
 	except:
+		c.commit()
 		c.close()
 		return 0L
 
@@ -1284,9 +1322,11 @@ def getVlanTableLong(col,vlanId):
 		data = cursor.fetchone()
 		result = data[0]
 		result = long(result)
+		c.commit()
 		c.close()
 		return result
 	except:
+		c.commit()
 		c.close()
 		return 0L
 
@@ -1299,9 +1339,11 @@ def getVlanTableStr(col,vlanId):
 		data = cursor.fetchone()
 		result = data[0]
 		result = str(result)
+		c.commit()
 		c.close()
 		return result
 	except:
+		c.commit()
 		c.close()
 		return ""
 
@@ -1315,9 +1357,11 @@ def getVlanNameList():
 		data = cursor.fetchall()
 		for i in data:
 			l.append(i[0])
+		c.commit()
 		c.close()
 		return l
 	except:
+		c.commit()
 		c.close()
 		return []
 
@@ -1394,12 +1438,23 @@ def bulkBassNum(vlan):
 		return []
 		print "Error in D1TPtable"
 
+def test():
+	c = connectDB()
+	cursor = c.cursor()
+	query = "INSERT INTO vlans(VlanID, VlanName, VlanEditType, VlanMTU, VlanDot10Said0,VlanDot10Said1,VlanDot10Said2,VlanDot10Said3, VlanEditRowStatus,counts,permanent ) VALUES(1, 'default', 2, 1500, 0,1,134,150, 4, 0, 1);"
+	cursor.execute(query)
+	sQuery = "select * from vlans"
+	cursor.execute(sQuery)
+	data = cursor.fetchall()
+	pprint(data)
+	c.commit()
+	c.close()
+
+def resetAll():
+	resetPortTable()
+	resetVlanTable()
+	initialPortTable()
+	initialVlanTable()
 
 if __name__ == '__main__':
-	resetPortTable()
-	initialPortTable()
-	resetVlanTable()
-	initialVlanTable()
-	initOIDTable()
-	bulkD1TPtable("1")
-	deleteUnusedVlan()
+	setDBVmVlan(6,101)

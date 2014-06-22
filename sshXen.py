@@ -9,7 +9,7 @@ ps = pw.xen_ps
 path = '/usr/local/xnode/'
 server_ip = pw.xen_host
 
-maxConnectionTimes = 25
+maxConnectionTimes = 30
 
 def create_cmd(mac,vlanName,vlanID,reset = False):
 	if reset:
@@ -41,18 +41,19 @@ def ssh_connect(mac,vlanID,vlanName,reset = False):
 		time.sleep(1.5)
 		timesCount+=1
 		if timesCount == maxConnectionTimes:
+			print "try "+str(maxConnectionTimes)+" times ssh connection"
 			break
-
 	feedback = stdout.read()
 	print feedback
-	eFeedback = feedback.split("vif")
-	while(str(eFeedback[1][0:1]) == "()"):
+	eFeedback = feedback.split("Error")
+	while(len(eFeedback) > 1):
 		print "Try Again:"
 		stdin, stdout, stderr = ssh.exec_command(create_cmd(mac,vlanName,vlanID,reset))
 		feedback = stdout.read()
 		print feedback
-		eFeedback = feedback.split("vif")
+		eFeedback = feedback.split("Error")
 	ssh.close()
 
 if __name__=="__main__":
-	pass
+	ssh_connect("00:16:3e:01:02:1d",1,"default",True)
+	ssh_connect("00:16:3e:01:02:03",1,"default",True)
